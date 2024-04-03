@@ -5,11 +5,8 @@ board appears to be working fine with no obvious hardware faults. The charge
 LED lights up green, the RGB LED cycles through a few colors, and the
 surface temperatures seem reasonable.
 
-<video controls muted width="854" height="480">
-<source src="01_smoke_test_480p.mp4" type="video/mp4" />
-<p>[video of OrangeCrab LED fading through a cycle of blue, green, red, ...]
-</p>
-</video>
+<!-- This link is a video player for a copy of ./01_smoke_test_480p.mp4 -->
+https://github.com/samblenny/ocfpga/assets/68084116/18302835-a04e-4eb0-a9c5-39e0e555e317
 
 
 ## Thermal
