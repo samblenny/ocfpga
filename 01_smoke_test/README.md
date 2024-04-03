@@ -20,7 +20,7 @@ surface temperatures seem reasonable.
 
    ![max temp is 87F](ir3__+2m03s_87F.jpg)
 
-4. Powerup +2m29s:
+4. Powerup +2m29s (bottom of board):
 
    ![max temp is 85F](ir4__+2m29s_85F_underside.jpg)
 
