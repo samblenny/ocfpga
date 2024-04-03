@@ -45,8 +45,9 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - Github [orangecrab-fpga/orangecrab-hardware](https://github.com/orangecrab-fpga/orangecrab-hardware):
   for r0.2.1 schematic pdf, see [hardware/orangecrab_r0.2.1/Production/OrangeCrab_r0.2.1_sch.pdf](https://github.com/orangecrab-fpga/orangecrab-hardware/blob/main/hardware/orangecrab_r0.2.1/Production/OrangeCrab_r0.2.1_sch.pdf)
 - Github [mwelling/orangecrab-test](https://github.com/mwelling/orangecrab-test):
-  Design files for Orangecrab test fixture (maybe useful for understanding what
-  factory test firmware does?)
+  Design files for Orangecrab test fixture. Maybe useful for understanding what
+  factory test firmware does? Schematic is at
+  [orangecrab-test.pdf](https://github.com/mwelling/orangecrab-test/blob/master/orangecrab-test.pdf)
 - Lattice Semiconductor [ECP5 product page](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5):
   for ECP5 family data sheet and related guides, scroll down to the
   [Documentation](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD)
