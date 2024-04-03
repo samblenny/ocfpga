@@ -23,7 +23,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 ## Software Links
 
 - Github [orangecrab-fpga/production-test-sw](https://github.com/orangecrab-fpga/production-test-sw):
-  Software, firmware, and gateware for OrangeCrab text fixture (probably a good
+  Software, firmware, and gateware for OrangeCrab test fixture (probably a good
   starting point to understand how DFU boot mode works)
 - Github [orangecrab-fpga/orangecrab-examples](https://github.com/orangecrab-fpga/orangecrab-examples):
   Example projects and code for OrangeCrab (probably good starting point for
