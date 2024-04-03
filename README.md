@@ -7,6 +7,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ## Experiments
 
+- [02 Check USB Devices](experiments/02_check_usb_devices/README.md)
 - [01 Smoke Test](experiments/01_smoke_test/README.md)
 
 
