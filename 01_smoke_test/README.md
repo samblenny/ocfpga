@@ -5,6 +5,12 @@ board appears to be working fine with no obvious hardware faults. The charge
 LED lights up green, the RGB LED cycles through a few colors, and the
 surface temperatures seem reasonable.
 
+<video controls muted width="854" height="480">
+<source src="01_smoke_test_480p.mp4" type="video/mp4" />
+<p>[video of OrangeCrab LED fading through a cycle of blue, green, red, ...]
+</p>
+</video>
+
 
 ## Thermal
 
@@ -33,7 +39,7 @@ surface temperatures seem reasonable.
    ![max temp is 93F](ir6__+20m09s_93F.jpg)
 
 
-# Visible
+## Visible
 
 The board looks like this with a regular camera:
 
