@@ -2,18 +2,15 @@
 
 Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
-![OrangeCrab fpga dev board with USB cable. Both LEDs are green.](01_smoke_test/oc-smoke-test.jpeg)
+![OrangeCrab fpga dev board with USB cable. Both LEDs are green.](experiments/01_smoke_test/oc-smoke-test.jpeg)
 
 
 ## Experiments
 
-- [01 Smoke Test](01_smoke_test/README.md)
+- [01 Smoke Test](experiments/01_smoke_test/README.md)
 
 
-## Links
-
-
-### Datasheets and Other Documentation
+## Documentation Links
 
 - [OrangeCrab r0.2 data sheet](https://groupgets-files.s3.amazonaws.com/Digikey_Marketplace/orangecrab_datasheet-r0.2.pdf)
 - [GroupGets OrangeCrab product page](https://groupgets.com/products/orange-crab-85f-lattice-ecp5-fpga-development-kit) (scroll down for various links in the product description)
@@ -21,7 +18,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - Lattice Semiconductor [ECP5 product page](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5): for ECP5 family data sheet and related guides, scroll down to the [Documentation](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD) heading
 
 
-### Where to Buy
+## Where to Buy
 
 These links are for the OrangeCrab 85F, which uses the 85F variant of the
 [Lattice ECP5 fpga](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5).
