@@ -21,7 +21,10 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - [01 Smoke Test](experiments/01_smoke_test/README.md)
 
 
-## Software Links
+## Documentation & Downloads
+
+
+### OrangeCrab Software
 
 - Github [orangecrab-fpga/production-test-sw](https://github.com/orangecrab-fpga/production-test-sw):
   Software, firmware, and gateware for OrangeCrab test fixture (probably a good
@@ -47,10 +50,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
   orangecrab-fpga/production-test-sw.
 
 
-## Documentation Links
-
-
-### OrangeCrab
+### OrangeCrab Hardware
 
 - [orangecrab-fpga.github.io/orangecrab-hardware](https://orangecrab-fpga.github.io/orangecrab-hardware/):
   HTML docs with hardware specs, pinouts, and
@@ -71,7 +71,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - DigiKey [OrangeCrab r0.2 data sheet](https://groupgets-files.s3.amazonaws.com/Digikey_Marketplace/orangecrab_datasheet-r0.2.pdf)
 
 
-### Related Projects (ULX3S also uses ECP5)
+### Related ECP5 Boards
 
 - [ulx3s.github.io](https://ulx3s.github.io/): Project homepage for ULX3S. The
   [Projects and Examples](https://ulx3s.github.io/#projects-and-examples) and
@@ -80,13 +80,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
   firmware that could be adapted for use on OrangeCrab.
 
 - [ulx3s/ulx3s-toolchain](https://github.com/ulx3s/ulx3s-toolchain) (Github):
-  Scripts for building ULX3S toolchain from source, including RISC-V compiler
-
-- [danderson/ulxs LPF file format specification](https://github.com/danderson/ulxs/blob/main/lpf.md):
-  Notes on using Lattice Preference File (LPF) file format to tell nextpnr how
-  to configure the ECP5 FPGA. This was cited on 1BitSquared \#orangecrab
-  Discord as a good source of info on configuring pin drive strength and slew
-  rate.
+  Scripts for installing ULX3S toolchain, including RISC-V compiler.
 
 
 ### ECP5 EDA Tools
@@ -104,6 +98,24 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
   Documentation for Lattice ECP5 bitstream format and internal architecture.
   This may be useful for learning about which ECP5 features are available in
   nextpnr and how to make use of them.
+
+- [danderson/ulxs LPF file format specification](https://github.com/danderson/ulxs/blob/main/lpf.md)
+  (Github): Notes on using Lattice Preference File (LPF) file format to tell
+  nextpnr how to configure the ECP5 FPGA. This was cited on 1BitSquared
+  \#orangecrab Discord as a good source of info on configuring pin drive
+  strength and slew rate.
+
+
+### RISC-V Compiler Toolchains
+
+- Embecosm [Tool Chain Downloads](https://www.embecosm.com/resources/tool-chain-downloads/):
+  Prebuilt RISC-V toolchains with GNU binutils, gcc or clang compiler, gdb, and
+  Newlib C standard library.
+
+- [embecosm/embecosm-toolchain-releases](https://github.com/embecosm/embecosm-toolchain-releases)
+  (Github): Build scripts and related dependencies for Embecosm toolchains. This
+  could be useful as a reference for building C standard libraries for specific
+  RISC-V instruction set extension combinations.
 
 
 ### Lattice (ECP5 family datasheets and guides)
