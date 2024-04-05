@@ -26,10 +26,16 @@ to a Saleae logic analyzer](headers_and_logic_analyzer.jpeg)
 My dev computer runs Debian, so I installed `Logic+1.2.29+(64-bit).zip` from
 Saleae's
 [legacy-software](https://support.saleae.com/logic-software/legacy-software/older-software-releases)
-downloads page. I unzipped the archive into `~/bin/logic-1.2.29/` and copied my
-calibration data file into `~/bin/logic-1.2.29/Calibration/`. To start Logic,
-I run `~/bin/logic-1.2.29/Logic -override` from a terminal in Xfce. I attempted
-to turn off all the preferences related to auto-updates and sending analytics.
+downloads page:
+
+1. Unzip the archive into `~/bin/logic-1.2.29/`
+
+2. Copy my calibration data file into `~/bin/logic-1.2.29/Calibration/`
+
+3. Install the udev rule with `~/bin/logic-1.2.29/Drivers/install_driver.sh`
+
+To start Logic, I run `~/bin/logic-1.2.29/Logic -override` from a terminal in
+Xfce. I turned off preferences related to auto-updates and sending analytics.
 
 This is how I connected the pins:
 
@@ -48,6 +54,9 @@ This is what I captured while booting the OrangeCrab into DFU mode (btn0 down
 at powerup) with the factory default LED-blinking firmware:
 
 ![screenshot of Saleae Logic 1.x logic analyzer software](Logic-screenshot.png)
+
+The traces are pretty boring. Apparently the LED blinking firmware does not
+output anything on those pins. That's fine though. The point was to
 
 
 # Next Steps
