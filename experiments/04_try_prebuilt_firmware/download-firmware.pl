@@ -3,7 +3,7 @@ use v5.30;
 use warnings;
 use Digest::SHA qw(sha256_hex);
 
-# Download OrangeCrab prebuilt firmware files from commit 40eaca4 of github
+# Download OrangeCrab prebuilt firmware files from commit 70eaca4 of github
 # repo: orangecrab-fpga/production-test-sw
 #
 # This script would be serious overkill just to download 3 files. But, my
