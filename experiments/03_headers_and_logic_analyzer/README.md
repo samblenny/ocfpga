@@ -56,7 +56,8 @@ at powerup) with the factory default LED-blinking firmware:
 ![screenshot of Saleae Logic 1.x logic analyzer software](Logic-screenshot.png)
 
 The traces are pretty boring. Apparently the LED blinking firmware does not
-output anything on those pins. That's fine though. The point was to
+output anything on those pins. That's fine though. The point was to connect the
+wiring, install Logic, and make sure that it runs without errors.
 
 
 # Next Steps
