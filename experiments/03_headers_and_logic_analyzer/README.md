@@ -60,7 +60,7 @@ output anything on those pins. That's fine though. The point was to connect the
 wiring, install Logic, and make sure that it runs without errors.
 
 
-# Next Steps
+## Next Steps
 
 Hopefully some of the other prebuilt firmware images (factory test?) will do
 something interesting like sending async serial debug messages. I want to try
