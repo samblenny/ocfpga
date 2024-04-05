@@ -2,19 +2,12 @@
 
 Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
-![OrangeCrab fpga dev board with USB cable. Both LEDs are green.](experiments/01_smoke_test/oc-smoke-test.jpeg)
-
-<!--
-### Contents
-
-- [Experiments](#experiments)
-- [Software Links](#software-links)
-- [Documentation Links](#documentation-links)
-- [Where to Buy](#where-to-buy)
--->
+![OrangeCrab fpga dev board with logic analyzer](experiments/03_headers_and_logic_analyzer/headers_and_logic_analyzer.jpeg)
 
 
 ## Experiments
+
+- [03 Headers and Logic Analyzer](experiments/03_headers_and_logic_analyzer/README.md)
 
 - [02 Check USB Devices](experiments/02_check_usb_devices/README.md)
 
