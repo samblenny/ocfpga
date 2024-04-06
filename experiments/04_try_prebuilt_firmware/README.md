@@ -1,7 +1,5 @@
 # 04 Try Prebuilt Firmware
 
-Work in progress. See [download-firmware.pl](download-firmware.pl).
-
 Goals:
 
 1. Figure out how, if possible, to read the factory LED blinking DFU firmware
@@ -17,6 +15,28 @@ Goals:
    decode that on my logic analyzer. For example, maybe some of this stuff
    would work:
    - https://github.com/orangecrab-fpga/orangecrab-examples
+
+
+## Results
+
+1. From the prebuilt binaries in orangecrab-fpga/production-test-sw, I can use
+   `dfu-util` to load either `orangecrab-test-85F.bit` or
+   `orangecrab-reboot-85F.bit` into the `-d 1209:5af0 alt=0` DFU defice. The
+   reboot-85F one blinks green and then starts DFU mode when I press btn0. The
+   test-85F one pulls pin 0 (silkscreen "0") high. It probably does a lot more,
+   but I don't know how to trigger that stuff.
+
+   ![Logic analyzer screenshot showing OrangeCrab pin 0 going high](Logic-orangecrab-test-85F.png)
+
+2. I can load the prebuilt `blink_fw.dfu` binary into `-d 1209:5af0 --alt 1`
+   and run it with `dfu-util -d 1209:5af0 --alt 1 -e`. It makes the LED blink
+   red.
+
+3. The prebuilt `combine.dfu` binary from orangecrab-fpga/orangecrab-examples
+   does not work. I can flash it if I change the product ID with `dfu-suffix`,
+   but, when I do that and attempt to run it, the LED just does the bootloader
+   rainbow fade thing. I assume maybe that's what happens if a bitstream fails
+   to load?
 
 
 ## References
@@ -60,6 +80,11 @@ Goals:
      ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5af0", GROUP="plugdev", MODE="664"
     EOF
     ```
+
+## Download Prebuilt OrangeCrab 85F Binaries
+
+I wrote a script to do download the files and verify that they match expected
+SHA256 digests. See [download-firmware.pl](download-firmware.pl).
 
 
 ## Notes on trying out dfu-util...
@@ -446,8 +471,6 @@ Goals:
     ECP5 surface temperature went up to about 106F, compared to about 93F when
     the bootloader is running (LED rainbow fade).
 
-    ![Logic analyzer screenshot showing OrangeCrab pin 0 going high](Logic-orangecrab-test-85F.png)
-
 11. Now what if I try the `orangecrab-reboot-85F.bit` bitstream?
 
     ```
@@ -482,24 +505,6 @@ Goals:
     I click the btn0 button, the LED starts its rainbow fade, and a DFU device
     shows up in `lsusb`. This is a lot more convenient compared to the previous
     DFU method of having to hold the button down while plugging in the cable.
-
-
-## Results
-
-1. From the prebuilt binaries in orangecrab-fpga/production-test-sw, I can use
-   `dfu-util` to load either `orangecrab-test-85F.bit` or
-   `orangecrab-reboot-85F.bit` into the `-d 1209:5af0 alt=0` DFU defice. The
-   reboot-85F one blinks green and then starts DFU mode when I press btn0. The
-   test-85F one pulls pin 0 (silkscreen "0") high. It probably does a lot more,
-   but I don't know how to trigger that stuff.
-
-2. I can load the prebuilt `blink_fw.dfu` binary into `-d 1209:5af0 --alt 1`
-   and run it with `dfu-util -d 1209:5af0 --alt 1 -e`. It makes the LED blink
-   red.
-
-3. The prebuilt `combine.dfu` binary from orangecrab-fpga/orangecrab-examples
-   does not work. I can flash it if I change the product ID with `dfu-suffix`,
-   but, when I do that, the LED just does the bootloader rainbow fade thing.
 
 
 ## Discoveries
