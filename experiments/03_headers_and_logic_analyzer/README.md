@@ -39,16 +39,31 @@ Xfce. I turned off preferences related to auto-updates and sending analytics.
 
 This is how I connected the pins:
 
-| Logic 8 | OrangeCrab |
-| ------- | ---------- |
-| 0 | 0 |
-| 1 | 1 |
-| 2 | SDA |
-| 3 | SCL |
-| 4 | 5 |
-| 5 | 6 |
-| 6 | 9 |
-| 7 | 10 |
+| Logic 8 | OrangeCrab | Feather Spec |
+| ------- | ---------- | ------------ |
+|   | A0   | A0  |
+|   | A1   | A1  |
+|   | A2   | A2  |
+|   | A3   | A3  |
+|   | A4   | A4 / D24 |
+|   | A5   | A5 / D25 |
+|   | SCK  | SCK |
+|   | MOSI | MO  |
+|   | MISO | MI  |
+| 0 | 0    | RX / D0 |
+| 1 | 1    | TX / D1 |
+| 2 | SDA  | SDA |
+| 3 | SCL  | SCL |
+| 4 | 5    | D5  |
+| 5 | 6    | D6  |
+| 6 | 9    | D9  |
+| 7 | 10   | D10 |
+|   | 11   | D1 |
+|   | 12   | D1 |
+|   | 13   | D1 |
+
+
+Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
 
 This is what I captured while booting the OrangeCrab into DFU mode (btn0 down
 at powerup) with the factory default LED-blinking firmware:
