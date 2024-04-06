@@ -7,6 +7,9 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ## Experiments
 
+- [04 Try Prebuilt Firmware](experiments/04_try_prebuilt_firmware/README.md)
+  (in progress)
+
 - [03 Headers and Logic Analyzer](experiments/03_headers_and_logic_analyzer/README.md)
 
 - [02 Check USB Devices](experiments/02_check_usb_devices/README.md)
