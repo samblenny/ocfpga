@@ -28,11 +28,11 @@ Goals:
    The README says a command called `dfu-util` can be used to read and write
    the DFU device's flash chip.
 
-2. These links are for Debian Bookworm's `dfu-tool` package (version 0.11-1):
+2. These links are for Debian Bookworm's `dfu-util` package (version 0.11-1):
    - package: https://packages.debian.org/bookworm/dfu-util
    - manpage: https://manpages.debian.org/bookworm/dfu-util/dfu-util.1.en.html
 
-3. These links are for Ubuntu 22.04 LTS `dfu-tool` package (version 0.9-1):
+3. These links are for Ubuntu 22.04 LTS `dfu-util` package (version 0.9-1):
    - package: https://packages.ubuntu.com/jammy/dfu-util
    - manpage: https://manpages.ubuntu.com/manpages/jammy/en/man1/dfu-tool.1.html
 
@@ -43,45 +43,50 @@ Goals:
 ## Install Dependencies
 
 1. Install Debian package for `dfu-util` (should also work for Ubuntu):
-   ```
-$ sudo apt install dfu-tool
-$ dfu-util --version | grep '^dfu-util'
-dfu-util 0.11
-```
+
+    ```
+    $ sudo apt install dfu-tool
+    $ dfu-util --version | grep '^dfu-util'
+    dfu-util 0.11
+    ```
 
 2. Add a udev to give user accounts in the plugdev group +rw permissions for
    the OrangeCrab DFU device:
-   ```
-$ cat <<EOF | sudo tee /etc/udev/rules.d/99-OrangeCrab-DFU.rules
-# OrangeCrab DFU bootloader (hold down btn0 button while plugging in USB)
-ACTION=="add", SUBSYSTEM=="usb", \
- ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5af0", GROUP="plugdev", MODE="664"
-EOF
-```
+
+    ```
+    $ cat <<EOF | sudo tee /etc/udev/rules.d/99-OrangeCrab-DFU.rules
+    # OrangeCrab DFU bootloader (hold down btn0 button while plugging in USB)
+    ACTION=="add", SUBSYSTEM=="usb", \
+     ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5af0", GROUP="plugdev", MODE="664"
+    EOF
+    ```
 
 
 ## My attempts to use dfu-util...
 
 1. Try listing devices:
-   ```
-$ man dfu-util
-$ dfu-util --list 2>&1 | perl -ne 'print if $n++ > 6'
-Deducing device DFU version from functional descriptor length
-dfu-util: Cannot open DFU device 05ac:8289 found on devnum 6 (LIBUSB_ERROR_ACCESS)
-dfu-util: Cannot open DFU device 1209:5af0 found on devnum 7 (LIBUSB_ERROR_ACCESS)
-```
+
+    ```
+    $ man dfu-util
+    $ dfu-util --list 2>&1 | perl -ne 'print if $n++ > 6'
+    Deducing device DFU version from functional descriptor length
+    dfu-util: Cannot open DFU device 05ac:8289 found on devnum 6 (LIBUSB_ERROR_ACCESS)
+    dfu-util: Cannot open DFU device 1209:5af0 found on devnum 7 (LIBUSB_ERROR_ACCESS)
+    ```
 
 2. That error looks like I'm missing a udev rule. So, try adding a rule that
    gives the plugdev group rw permissions for 1209:5af0:
-   ```
-$ lsusb | grep DFU
-Bus 001 Device 007: ID 1209:5af0 Generic OrangeCrab r0.2 DFU Bootloader v3.1-6-g62e92e2
-$ cat <<EOF | sudo tee /etc/udev/rules.d/99-OrangeCrab-DFU.rules
-# OrangeCrab DFU bootloader (hold down btn0 button while plugging in USB)
-ACTION=="add", SUBSYSTEM=="usb", \
- ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5af0", GROUP="plugdev", MODE="664"
-EOF
-```
+
+    ```
+    $ lsusb | grep DFU
+    Bus 001 Device 007: ID 1209:5af0 Generic OrangeCrab r0.2 DFU Bootloader v3.1-6-g62e92e2
+    $ cat <<EOF | sudo tee /etc/udev/rules.d/99-OrangeCrab-DFU.rules
+    # OrangeCrab DFU bootloader (hold down btn0 button while plugging in USB)
+    ACTION=="add", SUBSYSTEM=="usb", \
+     ATTRS{idVendor}=="1209", ATTRS{idProduct}=="5af0", GROUP="plugdev", MODE="664"
+    EOF
+    ```
+
    Also see the Debian wiki page for udev:
    - https://wiki.debian.org/udev
 
@@ -89,14 +94,15 @@ EOF
    the new udev rule.
 
 4. Try listing devices again:
-   ```
-$ dfu-util --list 2>&1 | perl -ne 'print if $n++ > 6' | grep -v '05ac:8289'
-Deducing device DFU version from functional descriptor length
-Found DFU: [1209:5af0] ver=0101, devnum=9, cfg=1, intf=0, path="1-2", alt=1,\
- name="0x00100000 RISC-V Firmware", serial="UNKNOWN"
-Found DFU: [1209:5af0] ver=0101, devnum=9, cfg=1, intf=0, path="1-2", alt=0,\
- name="0x00080000 Bitstream", serial="UNKNOWN"
-```
+
+    ```
+    $ dfu-util --list 2>&1 | perl -ne 'print if $n++ > 6' | grep -v '05ac:8289'
+    Deducing device DFU version from functional descriptor length
+    Found DFU: [1209:5af0] ver=0101, devnum=9, cfg=1, intf=0, path="1-2", alt=1,\
+    name="0x00100000 RISC-V Firmware", serial="UNKNOWN"
+    Found DFU: [1209:5af0] ver=0101, devnum=9, cfg=1, intf=0, path="1-2", alt=0,\
+    name="0x00080000 Bitstream", serial="UNKNOWN"
+    ```
 
 
 ## Logic Analyzer Wiring
