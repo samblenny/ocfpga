@@ -131,6 +131,97 @@ Goals:
      code at 0x100000 in FLASH after we've loaded it through the DFU
      bootloader."
 
+6. Attempting to read out the current firmware with `dfu-util ... --upload`
+   isn't working so far:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 0 -U alt0.dfu 2>&1 \
+        | perl -ne 'print if $n++ > 6' | grep -v '^$'
+    libusb version 1.0.26 (11724)
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #0 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from DFU device to PC
+    Upload	[                         ]   0%            0 bytesdfu-util:
+    Error during upload (LIBUSB_ERROR_PIPE)
+    Failed.
+    $
+    $ dfu-util -d 1209:5af0 -v --alt 1 -U alt1.dfu 2>&1 \
+        | perl -ne 'print if $n++ > 6' | grep -v '^$'
+    libusb version 1.0.26 (11724)
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from DFU device to PC
+    Upload	[                         ]   0%            0 bytesdfu-util:
+    Error during upload (LIBUSB_ERROR_PIPE)
+    Failed.
+    ```
+
+   I wonder about this line in the verbose output:
+
+    ```
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    ```
+
+   The presence of `bitCanDnload` suggests the possibility of a `bitCanUpload`,
+   which is not in the list. Perhaps the bootloader does not implement it. In
+   that case, maybe JTAG is the only way to read out the flash contents.
+
+7. Trying the download option to write blink_fw.dfu:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 1 -D prebuilt/blink_fw.dfu \
+        | perl -ne 'print if $n++ > 6' | grep -v '^$'
+    error resetting after download (LIBUSB_ERROR_NO_DEVICE)
+    libusb version 1.0.26 (11724)
+    DFU suffix version 100
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%         1576 bytes
+    Download done.
+    Sent a total of 1576 bytes
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    DFU state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
+    Resetting USB to switch back to runtime mode
+    Done!
+    ```
+
+   That works. Now the RGB LED is blinking red. If I unplug and re-connect the
+   OrangeCrab board, the LED goes back to its usual Blue-Green-Red fade cycle.
+
+   I'm not at all clear about whether I actually changed anything in flash or
+   if I just loaded some code into SRAM and jumped to it.
+
 
 ## Discoveries
 
@@ -142,12 +233,29 @@ Goals:
 2. [Commit 929cea3](https://github.com/orangecrab-fpga/orangecrab-examples/commit/929cea3d7e4a538bcfd15ba487cd1dc8b165fee9)
    in the `prebuilt` branch of orangecrab-examples includes a
    [litex/combine.dfu](https://github.com/orangecrab-fpga/orangecrab-examples/blob/929cea3d7e4a538bcfd15ba487cd1dc8b165fee9/litex/combine.dfu)
-   file that looks like it's be a prebuilt DFU image including CircuitPython.
-   It's unclear to me if it was built for the 25F or 85F board.
+   file that looks like it's a prebuilt DFU image including CircuitPython. It
+   looks like a build for the 25F board. Maybe I can trick it into running on
+   85F by patching bytes somewhere? (dfu-suffix???)
 
 <!-- raw combine.dfu
 https://github.com/orangecrab-fpga/orangecrab-examples/raw/929cea3d7e4a538bcfd15ba487cd1dc8b165fee9/litex/combine.dfu
 -->
+
+3. [Issue 28](https://github.com/im-tomu/foboot/issues/28) of im-tomu/foboot on
+   Github has an extended discussion of Litex VexRiscv configuration to get
+   foboot running with a VexRiscv core on OrangeCrab. There's also some stuff
+   about how the bootloader code works, assignment of vendor:product IDs,
+   building for 85F vs 25F, etc.
+
+4. As I'm attempting to figure out what bitstream and RISCV code are currently
+   running on my OrangeCrab, I've been reading through the im-tomu/foboot repo.
+   It sounds like the LED rainbow fade thing may be coming from foboot? Also,
+   foboot is based on [im-tomu/toboot](https://github.com/im-tomu/toboot),
+   which gets into more detail about how the bootloader is meant to work as a
+   failsafe code loader.
+
+   TL;DR... I'm really confused about what the bootloader is doing. Maybe I
+   should go read the code to look for the rainbow fading code.
 
 
 ## Logic Analyzer Wiring
