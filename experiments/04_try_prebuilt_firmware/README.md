@@ -8,7 +8,9 @@ Goals:
    image
 
 2. Figure out how, if possible, to write other prebuilt firmware images from
+
    https://github.com/orangecrab-fpga/production-test-sw/tree/main/prebuilt
+
    (I'm unsure if the factory test bitstreams can be flashed without JTAG)
 
 3. Send some kind of output to one of the OrangeCrab pins then capture and
