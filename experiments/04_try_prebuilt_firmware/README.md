@@ -222,6 +222,191 @@ Goals:
    I'm not at all clear about whether I actually changed anything in flash or
    if I just loaded some code into SRAM and jumped to it.
 
+8. Trying `dfutil -e` as described in the im-tomu/foboot README...
+
+   First attempt failed:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v -e 2>&1 | perl -ne 'print if $n++ > 6'
+    libusb version 1.0.26 (11724)
+    Deducing device DFU version from functional descriptor length
+    dfu-util: More than one DFU capable USB device found! Try `--list' and \
+        specify the serial number or disconnect all but one device
+    ```
+
+   Second attempt adding a `--alt 1` worked:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 1 -e 2>&1 | perl -ne 'print if $n++ > 6'
+    libusb version 1.0.26 (11724)
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    dfu-util: can't detach
+    ```
+
+   Once that ran, the LED started blinking red. It seems that when I downloaded
+   `blink_fw.dfu` with `--alt 1`, it did get saved to flash. But, when board
+   is power cycled, either into DFU mode or regular mode, the code for alt=1
+   does not automatically run. This behavior matches some of the descriptions
+   in the im-tomu/toboot and im-tomu/foboot repos about how launching code is
+   supposed to work.
+
+9. Trying to flash the CircuitPython `combine.dfu` file (which has the 25F
+   suffix):
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 1 -D prebuilt/combine.dfu 2>&1 \
+        | perl -ne 'print if $n++>6'
+    libusb version 1.0.26 (11724)
+    DFU suffix version 100
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    dfu-util: Error: File ID 1209:5bf0 does not match device (1209:5af0 or 1209:5af0)
+    ```
+
+   That didn't work, so what if I just force it to use the 85F vendor:product
+   suffix (I'm still expecting this to fail because of a 25F chip id that I can
+   see in a hexdump of the bitstream)...
+
+   First change the dfu suffix:
+
+    ```
+    $ dfu-suffix --check prebuilt/combine.dfu 2>&1 | perl -ne 'print if $n++>5'
+    The file prebuilt/combine.dfu contains a DFU suffix with the following properties:
+    BCD device:	0xFFFF
+    Product ID:	0x5BF0
+    Vendor ID:	0x1209
+    BCD DFU:	0x0100
+    Length:		16
+    CRC:		0xFBDEE4C9
+    $
+    $ cp prebuilt/combine.dfu prebuilt/combine_85F.dfu
+    $
+    $ dfu-suffix --delete prebuilt/combine_85F.dfu 2>&1 | perl -ne 'print if $n++>5'
+    Suffix successfully removed from file
+    $
+    $ dfu-suffix -v 1209 -p 5af0 --add prebuilt/combine_85F.dfu 2>&1 | perl -ne 'print if $i++>5'
+    Suffix successfully added to file
+    $
+    $ dfu-suffix --check prebuilt/combine_85F.dfu 2>&1 | perl -ne 'print if $i++>5'
+    The file prebuilt/combine_85F.dfu contains a DFU suffix with the following properties:
+    BCD device:	0xFFFF
+    Product ID:	0x5AF0
+    Vendor ID:	0x1209
+    BCD DFU:	0x0100
+    Length:		16
+    CRC:		0xECA5F08A
+    $
+    $
+    ```
+
+   Then download the modified file:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 1 -D prebuilt/combine_85F.dfu 2>&1 \
+        | perl -ne 'print if $n++>6'
+    libusb version 1.0.26 (11724)
+    DFU suffix version 100
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%       947348 bytes
+    Download done.
+    Sent a total of 947348 bytes
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    dfu-util: unable to read DFU status after completion (LIBUSB_ERROR_IO)
+    ```
+
+   When the board reboots, it comes up doing the normal rainbow fade LED thing.
+   So, now I'll try rebooting to dfu mode and running `dfu-util -e`:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 1 -e 2>&1 | perl -ne 'print if $n++>5'
+
+    libusb version 1.0.26 (11724)
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #1 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    ```
+
+   Hmm... seems like nothing happened. The board's LED is still doing the
+   rainbow fade thing with no interruption.
+
+   This time what about trying again with alt=0?
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 0 -D prebuilt/combine_85F.dfu 2>&1 | perl -ne 'print if $n++>5'
+
+    libusb version 1.0.26 (11724)
+    DFU suffix version 100
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #0 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%       947348 bytes
+    Download done.
+    Sent a total of 947348 bytes
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    DFU state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
+    Resetting USB to switch back to runtime mode
+    Done!
+    ```
+
+   Okay, that was different. Now the LED is kind of turquoise-ish? When I cycle
+   power to the board (not holding btn0), the LED comes up turquoise, but it
+   starts doing the rainbow fade if I press btn0. When I do a dfu-mode power
+   cycle, the LED just does the rainbow thing.
+
+I'm so confused now. I have no idea what's going on.
+
 
 ## Discoveries
 
