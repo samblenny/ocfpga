@@ -15,24 +15,31 @@ use Digest::SHA qw(sha256_hex);
 
 # Data to generate firmware urls and verify expected SHA256 digests
 my $DATA = {
-    baseurl =>
-        'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/'
-        . '70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
     files => [
         {
             name => 'blink_fw.dfu',
+            baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
             sha2 => 'e4ae2fd9b9e758c37d4e7403de341f3b4aba60abcacb67a75c4bfb914c099bc8',
             size => 1592,
         },
         {
             name => 'orangecrab-reboot-85F.bit',
+            baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
             sha2 => '4c4fed24aa15554fad560e2ef46710f1963f11edb0fef503b52fb86e343402b9',
             size => 280518,
         },
         {
             name => 'orangecrab-test-85F.bit',
+            baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
             sha2 => '94f3ae522fbc39808c22068eb8730c9ecd8522dcc23eb9be2bedf590a888f5a0',
             size => 603620,
+        },
+        {
+            # This is a combined Soc + CircuitPython image for OrangeCrab 25F
+            name => 'combine.dfu',
+            baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/orangecrab-examples/929cea3d7e4a538bcfd15ba487cd1dc8b165fee9/litex/',
+            sha2 => 'e8f816283e946cc07f50a809a33899e9f2085c958854830d191e2bf595a5795e',
+            size => 947364,
         },
     ],
     outDir => 'prebuilt',
@@ -60,7 +67,7 @@ sub pickDownloader {
 # Download a file
 sub download {
     my($downloader, $file) = @_;
-    my $cmd = "$downloader $DATA->{baseurl}$file";
+    my $cmd = "$downloader $file->{baseurl}$file->{name}";
     say $cmd;
     system($cmd);
 }
@@ -93,7 +100,7 @@ for my $file (@{$DATA->{files}}) {
     if (-f "$dir/$name") {
         say " already have $name";
     } else {
-        if(0 != download($downloader, $name)) {
+        if(0 != download($downloader, $file)) {
             die "ERR: $name : download failed\n";
         }
         sleep(3);
