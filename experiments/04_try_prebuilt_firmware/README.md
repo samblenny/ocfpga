@@ -405,7 +405,101 @@ Goals:
    starts doing the rainbow fade if I press btn0. When I do a dfu-mode power
    cycle, the LED just does the rainbow thing.
 
-I'm so confused now. I have no idea what's going on.
+   I'm so confused now. I have no idea what's going on.
+
+10. Okay, one more try, but this time, what if I try writing the prebuilt
+    `orangecrab-test-85F.bit` file to `alt=0`, which is supposed to be the
+    bitstream slot? I'm hoping that this will run the factory test code, so I
+    set my logic analyzer to record as I flash this:
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 0 -D orangecrab-test-85F.bit 2>&1 \
+        | perl -ne 'print if $n++>5'
+
+    libusb version 1.0.26 (11724)
+    dfu-util: Warning: Invalid DFU suffix signature
+    dfu-util: A valid DFU suffix will be required in a future dfu-util release
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #0 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%       603620 bytes
+    Download done.
+    Sent a total of 603620 bytes
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    DFU state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
+    Resetting USB to switch back to runtime mode
+    error resetting after download (LIBUSB_ERROR_NO_DEVICE)
+    Done!
+    ```
+
+    When it ran the new firmware, the LED went dark and pin 0 went high! The
+    ECP5 surface temperature went up to about 106F, compared to about 93F when
+    the bootloader is running (LED rainbow fade).
+
+    ![Logic analyzer screenshot showing OrangeCrab pin 0 going high](Logic-orangecrab-test-85F.png)
+
+11. Now what if I try the `orangecrab-reboot-85F.bit` bitstream?
+
+    ```
+    $ dfu-util -d 1209:5af0 -v --alt 0 -D orangecrab-reboot-85F.bit 2>&1 \
+        | perl -ne 'print if $n++>5'
+
+    libusb version 1.0.26 (11724)
+    dfu-util: Warning: Invalid DFU suffix signature
+    dfu-util: A valid DFU suffix will be required in a future dfu-util release
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    DFU attributes: (0x0d) bitCanDnload bitManifestationTolerant bitWillDetach
+    Detach timeout 10000 ms
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #0 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%       280518 bytes
+    Download done.
+    Sent a total of 280518 bytes
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    dfu-util: unable to read DFU status after completion (LIBUSB_ERROR_IO)
+    ```
+
+    This is interesting... when I power cycle the board, it comes up with the
+    LED blinking green, and `lsusb` does not show a DFU device. But, now, when
+    I click the btn0 button, the LED starts its rainbow fade, and a DFU device
+    shows up in `lsusb`. This is a lot more convenient compared to the previous
+    DFU method of having to hold the button down while plugging in the cable.
+
+
+## Results
+
+1. From the prebuilt binaries in orangecrab-fpga/production-test-sw, I can use
+   `dfu-util` to load either `orangecrab-test-85F.bit` or
+   `orangecrab-reboot-85F.bit` into the `-d 1209:5af0 alt=0` DFU defice. The
+   reboot-85F one blinks green and then starts DFU mode when I press btn0. The
+   test-85F one pulls pin 0 (silkscreen "0") high. It probably does a lot more,
+   but I don't know how to trigger that stuff.
+
+2. I can load the prebuilt `blink_fw.dfu` binary into `-d 1209:5af0 --alt 1`
+   and run it with `dfu-util -d 1209:5af0 --alt 1 -e`. It makes the LED blink
+   red.
+
+3. The prebuilt `combine.dfu` binary from orangecrab-fpga/orangecrab-examples
+   does not work. I can flash it if I change the product ID with `dfu-suffix`,
+   but, when I do that, the LED just does the bootloader rainbow fade thing.
 
 
 ## Discoveries
@@ -422,10 +516,6 @@ I'm so confused now. I have no idea what's going on.
    looks like a build for the 25F board. Maybe I can trick it into running on
    85F by patching bytes somewhere? (dfu-suffix???)
 
-<!-- raw combine.dfu
-https://github.com/orangecrab-fpga/orangecrab-examples/raw/929cea3d7e4a538bcfd15ba487cd1dc8b165fee9/litex/combine.dfu
--->
-
 3. [Issue 28](https://github.com/im-tomu/foboot/issues/28) of im-tomu/foboot on
    Github has an extended discussion of Litex VexRiscv configuration to get
    foboot running with a VexRiscv core on OrangeCrab. There's also some stuff
@@ -439,8 +529,8 @@ https://github.com/orangecrab-fpga/orangecrab-examples/raw/929cea3d7e4a538bcfd15
    which gets into more detail about how the bootloader is meant to work as a
    failsafe code loader.
 
-   TL;DR... I'm really confused about what the bootloader is doing. Maybe I
-   should go read the code to look for the rainbow fading code.
+   I'm really confused about what the bootloader is doing. Maybe I should go
+   read the code to look for the rainbow fading code.
 
 
 ## Logic Analyzer Wiring
