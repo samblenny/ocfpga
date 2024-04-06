@@ -21,7 +21,7 @@ Goals:
 
 1. From the prebuilt binaries in orangecrab-fpga/production-test-sw, I can use
    `dfu-util` to load either `orangecrab-test-85F.bit` or
-   `orangecrab-reboot-85F.bit` into the `-d 1209:5af0 alt=0` DFU defice. The
+   `orangecrab-reboot-85F.bit` into the `-d 1209:5af0 alt=0` DFU device. The
    reboot-85F one blinks green and then starts DFU mode when I press btn0. The
    test-85F one pulls pin 0 (silkscreen "0") high. It probably does a lot more,
    but I don't know how to trigger that stuff.
@@ -87,7 +87,38 @@ I wrote a script to do download the files and verify that they match expected
 SHA256 digests. See [download-firmware.pl](download-firmware.pl).
 
 
-## Notes on trying out dfu-util...
+## Logic Analyzer Wiring
+
+This is how I've currently connected pins between my OrangeCrab and logic
+analyzer:
+
+| Logic 8 | OrangeCrab | Feather Spec |
+| ------- | ---------- | ------------ |
+|   | A0   | A0  |
+|   | A1   | A1  |
+|   | A2   | A2  |
+|   | A3   | A3  |
+|   | A4   | A4 / D24 |
+|   | A5   | A5 / D25 |
+|   | SCK  | SCK |
+|   | MOSI | MO  |
+|   | MISO | MI  |
+| 0 | 0    | RX / D0 |
+| 1 | 1    | TX / D1 |
+| 2 | SDA  | SDA |
+| 3 | SCL  | SCL |
+| 4 | 5    | D5  |
+| 5 | 6    | D6  |
+| 6 | 9    | D9  |
+| 7 | 10   | D10 |
+|   | 11   | D1 |
+|   | 12   | D1 |
+|   | 13   | D1 |
+
+Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
+
+
+## Notes on Using dfu-util
 
 1. Try listing devices:
 
@@ -536,34 +567,3 @@ SHA256 digests. See [download-firmware.pl](download-firmware.pl).
 
    I'm really confused about what the bootloader is doing. Maybe I should go
    read the code to look for the rainbow fading code.
-
-
-## Logic Analyzer Wiring
-
-This is how I've currently connected pins between my OrangeCrab and logic
-analyzer:
-
-| Logic 8 | OrangeCrab | Feather Spec |
-| ------- | ---------- | ------------ |
-|   | A0   | A0  |
-|   | A1   | A1  |
-|   | A2   | A2  |
-|   | A3   | A3  |
-|   | A4   | A4 / D24 |
-|   | A5   | A5 / D25 |
-|   | SCK  | SCK |
-|   | MOSI | MO  |
-|   | MISO | MI  |
-| 0 | 0    | RX / D0 |
-| 1 | 1    | TX / D1 |
-| 2 | SDA  | SDA |
-| 3 | SCL  | SCL |
-| 4 | 5    | D5  |
-| 5 | 6    | D6  |
-| 6 | 9    | D9  |
-| 7 | 10   | D10 |
-|   | 11   | D1 |
-|   | 12   | D1 |
-|   | 13   | D1 |
-
-Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
