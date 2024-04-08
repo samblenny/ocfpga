@@ -1,14 +1,12 @@
-# 05 Try Building Examples
+# 05 Try Riscv Examples
 
 Goals:
 
-1. Build ECP5 85F DFU binaries for the riscv and litex example projects in my
-   fork of orangecrab-fpga/orangecrab-examples:
+1. Build ECP5 85F DFU binaries for the riscv example projects in my fork of
+   orangecrab-fpga/orangecrab-examples:
    [samblenny/orangecrab-examples](https://github.com/samblenny/orangecrab-examples)
 
-2. Flash the binaries
-
-3. Run the binaries (confirming whether they work or not)
+2. Flash and run the binaries
 
 
 ## Results
@@ -210,7 +208,5 @@ btn0 button is at [05_button_example.mp4](05_button_example.mp4).
    That works! Now the OrangeCrab boots with the RGB LED red. Pressing the
    button cycles through blue, green, then back to red.
 
-   https://github.com/samblenny/ocfpga/assets/68084116/d7068e28-e92d-47cc-9af7-04bac62ded20
-
-   If the player above doesn't work, the video of the LED changing as I press the
-   btn0 button is at [05_button_example.mp4](05_button_example.mp4).
+   There's a video up in the [Results](#results) section. If the player doesn't
+   work, there's a copy at [05_button_example.mp4](05_button_example.mp4).

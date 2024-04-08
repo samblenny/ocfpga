@@ -7,7 +7,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ## Experiments
 
-- [05 Try Building Examples](experiments/05_try_building_examples/README.md)
+- [05 Try Riscv Examples](experiments/05_try_riscv_examples/README.md)
   (in progress)
 
 - [04 Try Prebuilt Firmware](experiments/04_try_prebuilt_firmware/README.md)
