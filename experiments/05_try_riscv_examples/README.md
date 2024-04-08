@@ -11,14 +11,19 @@ Goals:
 
 ## Results
 
-*work in progress*
+1. The `riscv/button` example after installing toolchain and modifying Makefile:
 
-The riscv/button example after installing toolchain and modifying Makefile:
+   https://github.com/samblenny/ocfpga/assets/68084116/d7068e28-e92d-47cc-9af7-04bac62ded20
 
-https://github.com/samblenny/ocfpga/assets/68084116/d7068e28-e92d-47cc-9af7-04bac62ded20
+   If the player above doesn't work, the video of the LED changing as I press
+   the btn0 button is at [05_button_example.mp4](05_button_example.mp4).
 
-If the player above doesn't work, the video of the LED changing as I press the
-btn0 button is at [05_button_example.mp4](05_button_example.mp4).
+2. The `riscv/blink` example:
+
+   https://github.com/samblenny/ocfpga/assets/68084116/72ea94d6-2579-4271-b628-7db14578e07b
+
+   If the player above doesn't work, there's a video of the LED blinking cyan
+   at [05_blink_example.mp4](05_blink_example.mp4).
 
 
 ## Plan
@@ -210,3 +215,95 @@ btn0 button is at [05_button_example.mp4](05_button_example.mp4).
 
    There's a video up in the [Results](#results) section. If the player doesn't
    work, there's a copy at [05_button_example.mp4](05_button_example.mp4).
+
+9. Attempt to build the `orangecrab-examples/riscv/blink` example:
+
+   First, fix the Makefile similarly to the changes above for `riscv/button`:
+
+    ```diff
+    $ git diff
+    diff --git a/riscv/blink/Makefile b/riscv/blink/Makefile
+    index 838e484..4c724e9 100644
+    --- a/riscv/blink/Makefile
+    +++ b/riscv/blink/Makefile
+    @@ -1,5 +1,5 @@
+
+    -CROSS=riscv64-unknown-elf-
+    +CROSS=riscv32-unknown-elf-
+     CFLAGS=
+
+     all: blink_fw.dfu
+    @@ -8,8 +8,9 @@ all: blink_fw.dfu
+     dfu: blink_fw.dfu
+            dfu-util -D blink_fw.dfu
+
+    +# gcc13 needs -march=rv32i_zicsr (the old way was just -march=rv32i)
+     blink_fw.elf: start.s main.c
+    -       $(CROSS)gcc $(CFLAGS) -march=rv32i -mabi=ilp32 -Wl,-Bstatic,-T,sections.ld,--strip-debug -ffreestanding -nostdlib -I. -o blink_fw.elf start.s main.c
+    +       $(CROSS)gcc $(CFLAGS) -march=rv32i_zicsr -mabi=ilp32 -Wl,-Bstatic,-T,sections.ld,--strip-debug -ffreestanding -nostdlib -I. -o blink_fw.elf start.s main.c
+
+     blink_fw.hex: blink_fw.elf
+            $(CROSS)objcopy -O verilog blink_fw.elf blink_fw.hex
+    @@ -21,9 +22,17 @@ blink_fw.dfu: blink_fw.bin
+            cp blink_fw.bin blink_fw.dfu
+            dfu-suffix -v 1209 -p 5bf0 -a blink_fw.dfu
+
+    +# ---- 85F Target ----
+    +dfu_85F: blink_85F.dfu
+    +       dfu-util -d 1209:5af0 --alt 0 -D blink_85F.dfu | perl -ne 'print if $$n++>5'
+    +
+    +blink_85F.dfu: blink_fw.bin
+    +       cp blink_fw.bin blink_85F.dfu
+    +       dfu-suffix -v 1209 -p 5af0 -a blink_85F.dfu 2>&1 | perl -ne 'print if $$n++>5'
+    +
+     # ---- Clean ----
+
+     clean:
+    -       rm -f blink_fw.bin blink_fw.elf blink_fw.dfu
+    +       rm -f blink_fw.bin blink_fw.elf blink_fw.dfu blink_85F.dfu
+
+    -.PHONY: all
+    \ No newline at end of file
+    +.PHONY: all
+    ```
+
+    Build the DFU binary:
+    ```
+    $ make blink_85F.dfu
+    riscv32-unknown-elf-gcc  -march=rv32i_zicsr -mabi=ilp32 \
+        -Wl,-Bstatic,-T,sections.ld,--strip-debug -ffreestanding -nostdlib \
+        -I. -o blink_fw.elf start.s main.c
+    riscv32-unknown-elf-objcopy -O binary blink_fw.elf blink_fw.bin
+    cp blink_fw.bin blink_85F.dfu
+    dfu-suffix -v 1209 -p 5af0 -a blink_85F.dfu 2>&1 | perl -ne 'print if $n++>5'
+    Suffix successfully added to file
+    ```
+
+    Connect the OrangeCrab 85F in DFU mode, then load the binary with:
+    ```
+    $ make dfu_85F
+    dfu-util -d 1209:5af0 --alt 0 -D blink_85F.dfu | perl -ne 'print if $n++>5'
+
+    Deducing device DFU version from functional descriptor length
+    Opening DFU capable USB device...
+    Device ID 1209:5af0
+    Device DFU version 0101
+    Claiming USB DFU Interface...
+    Setting Alternate Interface #0 ...
+    Determining device status...
+    DFU state(2) = dfuIDLE, status(0) = No error condition is present
+    DFU mode device DFU version 0101
+    Device returned transfer size 4096
+    Copying data from PC to DFU device
+    Download	[=========================] 100%         1136 bytes
+    Download done.
+    DFU state(7) = dfuMANIFEST, status(0) = No error condition is present
+    DFU state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
+    Resetting USB to switch back to runtime mode
+    Done!
+    ```
+
+   It works. LED blinks bright cyan-ish (maybe turquoise?).
+
+   There's a video up in the [Results](#results) section. If the player doesn't
+   work, there's a copy at [05_blink_example.mp4](05_blink_example.mp4).
