@@ -25,6 +25,11 @@ Goals:
    If the player above doesn't work, there's a video of the LED blinking cyan
    at [05_blink_example.mp4](05_blink_example.mp4).
 
+3. Copies of my DFU binaries for `riscv/blink` and `riscv/button` are in
+   [./dfu_prebuilt/](dfu_prebuilt), along with a copy of the license (MIT)
+   from the orangecrab-examples repo. For details, see
+   [dfu_prebuilt/README.md](dfu_prebuilt/README.md).
+
 
 ## Plan
 
