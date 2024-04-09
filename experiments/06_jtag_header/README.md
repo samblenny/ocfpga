@@ -15,7 +15,7 @@ Goal:
 ## Results:
 
 1. JTAG header pins are ready to use:
-![OrangeCrab fpga dev board with logic analyzer and jtag header](experiments/06_jtag_header/06_jtag_header.jpeg)
+![OrangeCrab fpga dev board with logic analyzer and jtag header](06_jtag_header.jpeg)
 
 2. Tigard board is ordered and on the way
 
