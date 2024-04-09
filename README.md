@@ -2,10 +2,12 @@
 
 Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
-![OrangeCrab fpga dev board with logic analyzer](experiments/03_headers_and_logic_analyzer/headers_and_logic_analyzer.jpeg)
+![OrangeCrab fpga dev board with logic analyzer and jtag header](experiments/06_jtag_header/06_jtag_header.jpeg)
 
 
 ## Experiments
+
+- [06 JTAG Header](experiments/06_jtag_header/README.md)
 
 - [05 Try Riscv Examples](experiments/05_try_riscv_examples/README.md)
 
