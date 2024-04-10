@@ -7,6 +7,9 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ## Experiments
 
+- [07 Try Tigard JTAG](experiments/07_try_tigard_jtag/README.md)
+  (work in progress)
+
 - [06 JTAG Header](experiments/06_jtag_header/README.md)
 
 - [05 Try Riscv Examples](experiments/05_try_riscv_examples/README.md)
@@ -25,7 +28,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ### OrangeCrab Software
 
-- Github [orangecrab-fpga/production-test-sw](https://github.com/orangecrab-fpga/production-test-sw):
+- **Gateware**: Github [orangecrab-fpga/production-test-sw](https://github.com/orangecrab-fpga/production-test-sw):
   Software, firmware, and gateware for OrangeCrab test fixture (probably a good
   starting point to understand how DFU boot mode works). The
   [prebuilt](https://github.com/orangecrab-fpga/production-test-sw/tree/main/prebuilt)
@@ -35,18 +38,31 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
   fully utilizing the gateware capacity of an r0.2.1 85F probably requires a
   patched bootloader to be flashed over jtag.
 
-- Github [orangecrab-fpga/orangecrab-examples](https://github.com/orangecrab-fpga/orangecrab-examples):
+- **Examples**: Github [orangecrab-fpga/orangecrab-examples](https://github.com/orangecrab-fpga/orangecrab-examples):
   Example projects and code for OrangeCrab (probably good starting point for
   learning how to build riscv SoCs with Litex or Amaranth)
 
-- Github [gregdavill/circuitpython](https://github.com/gregdavill/circuitpython/tree/orangecrab/ports/litex/boards/orangecrab)
+- **Old CircuitPython Example**: Github [gregdavill/circuitpython](https://github.com/gregdavill/circuitpython/tree/orangecrab/ports/litex/boards/orangecrab)
   (orangecrab branch): 4 year old CircuitPython port for OrangeCrab (likely
   broken or incomplete? but it has interesting Litex stuff.)
 
-- Github [gregdavill/foboot](https://github.com/gregdavill/foboot/tree/OrangeCrab)
+- **Bootloader**: Github [gregdavill/foboot](https://github.com/gregdavill/foboot/tree/OrangeCrab)
   (OrangeCrab branch): OrangeCrab bootloader based on the Fomu bootloader. See
   notes above about prebuilt bootloader and firmware files in
   orangecrab-fpga/production-test-sw.
+
+- **ecpprog**: Github [gregdavill/ecpprog](https://github.com/gregdavill/ecpprog):
+  ECP5 JTAG programmer that works with FTDI-based JTAG probes (including the FT2232H).
+
+- **openOCD config (OrangeCrab)**: Github [orangecrab-hardware/contrib/openocd/orangecrab-85f.cfg](https://github.com/orangecrab-fpga/orangecrab-hardware/blob/f176a3f87ea1b35bee12e4b1aa4148b1dfcae233/contrib/openocd/orangecrab-85f.cfg):
+  openOCD config for OrangeCrab 85F with FTDI JTAG probe. This config is set up
+  for USB device `0403:6010`, which is the default product ID for the FTDI
+  FT2232H/D (source: [FTDI's Utilities](https://ftdichip.com/utilities/) page,
+  search for "6010").
+
+- **openOCD config (Tigard)**: Gitub [tigard-tools/tigard/README.md](https://github.com/tigard-tools/tigard/tree/d822c4e9425e1fd5c4f62631a532aa64946c526c?tab=readme-ov-file#jtag-debug-on-jtag-or-cortex-header):
+  The main README includes an openOCD config for Tigard JTAG (compare to the
+  OrangeCrab openOCD config above).
 
 
 ### OrangeCrab Hardware
