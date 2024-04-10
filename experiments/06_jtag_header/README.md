@@ -22,6 +22,7 @@ Goal:
    are, from left to right:
 
    | GND | TCK | TDO | TDI | TMS |
+   | --- | --- | --- | --- | --- |
 
    ![closeup of JTAG header pins](06_closeup.jpeg)
 
