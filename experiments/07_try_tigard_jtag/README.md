@@ -5,7 +5,9 @@
 
 1. Mount Tigard and wire it up to the OrangeCrab 85F
 
-2. Try `ecpprog` and `openOCD`
+2. Try `ecpprog` and `openOCD` with Tigard JTAG interface
+
+3. Try `screen` with Tigard UART, capturing TX pin on logic analyzer
 
 
 ## Results
@@ -34,6 +36,9 @@
    |             |          TDI |         | TDO        |              |
    |             |          TDO |         | TDI        |              |
    |             |          TMS |         | TMS        |              |
+
+   | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
+   | ----------- | ------------ | ------- | ---------- | ------------ |
    |             |              |         | RST        | Rst          |
    |        VTGT |         VTGT |         | 3V3        | 3.3V         |
    |             |              |         | Aref       | Aref         |
@@ -50,6 +55,9 @@
    |          TX |              | 0       | 0          | RX / D0      |
    |          RX |              | 1       | 1          | TX / D1      |
    |         GND |              |         | GND        | GND          |
+
+   | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
+   | ----------- | ------------ | ------- | ---------- | ------------ |
    |             |              | 2       | SDA        | SDA          |
    |             |              | 3       | SCL        | SCL          |
    |             |              | 4       | 5          | D5           |
@@ -61,3 +69,5 @@
    |             |              |         | 13         | D13          |
 
    Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
+
+2. Tigard switches are set for `VTGT` (level shifters) and `JTAG SPI`.
