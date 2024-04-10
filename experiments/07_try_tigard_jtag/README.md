@@ -42,7 +42,7 @@
    |             |              |         | RST        | Rst          |
    |        VTGT |         VTGT |         | 3V3        | 3.3V         |
    |             |              |         | Aref       | Aref         |
-   |             |              | GND 0-7 | GND        | GND          |
+   |             |              | GND0-7  | GND        | GND          |
    |             |              |         | A0         | A0           |
    |             |              |         | A1         | A1           |
    |             |              |         | A2         | A2           |
