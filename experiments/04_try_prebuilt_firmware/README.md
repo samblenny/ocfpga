@@ -111,9 +111,9 @@ analyzer:
 | 5 | 6    | D6  |
 | 6 | 9    | D9  |
 | 7 | 10   | D10 |
-|   | 11   | D1 |
-|   | 12   | D1 |
-|   | 13   | D1 |
+|   | 11   | D11 |
+|   | 12   | D12 |
+|   | 13   | D13 |
 
 Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
 
