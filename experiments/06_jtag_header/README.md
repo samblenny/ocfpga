@@ -15,9 +15,17 @@ Goal:
 ## Results:
 
 1. JTAG header pins are ready to use:
-![OrangeCrab fpga dev board with logic analyzer and jtag header](06_jtag_header.jpeg)
 
-2. Tigard board is ordered and on the way
+   ![OrangeCrab fpga dev board with logic analyzer and JTAG header](06_jtag_header.jpeg)
+
+2. With OrangeCrab oriented with battery connector on the right, the JTAG pins
+   are, from left to right:
+
+   | GND | TCK | TDO | TDI | TMS |
+
+   ![closeup of JTAG header pins](06_closeup.jpeg)
+
+3. Tigard board is ordered and on the way
 
 
 ## Plan:
