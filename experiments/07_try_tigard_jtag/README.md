@@ -5,9 +5,11 @@
 
 1. Mount Tigard and wire it up to the OrangeCrab 85F
 
-2. Try `ecpprog` and `openOCD` with Tigard JTAG interface
+2. Try `openOCD` with Tigard JTAG interface
 
-3. Try `screen` and `tio` with Tigard UART, capturing TX pin on logic analyzer
+3. Try `tio` with Tigard UART, capturing TX pin on logic analyzer
+
+4. Try `ecpprog` with Tigard JTAG interface
 
 
 ## Results
@@ -16,7 +18,46 @@
 
    ![OrangeCrab, Tigard, and logic analyzer mounted in a sandwich of Tamiya universal plates, with lots of wires](07_tigard_with_wires.jpeg)
 
-2. ... *(work in progress)*
+2. Basic `openocd` Tigard JTAG connection works:
+
+    ```bash
+    $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
+    Open On-Chip Debugger 0.12.0
+    Licensed under GNU GPL v2
+    For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
+    none separate
+
+    Info : auto-selecting first available session transport "jtag". To \
+        override use 'transport select <transport>'.
+    Info : Listening on port 6666 for tcl connections
+    Info : Listening on port 4444 for telnet connections
+    Warn : An adapter speed is not selected in the init scripts. OpenOCD will \
+        try to run the adapter at the low speed (100 kHz)
+    Warn : To remove this warnings and achieve reasonable communication speed \
+        with the target, set "adapter speed" or "jtag_rclk" in the init scripts.
+    Info : clock speed 100 kHz
+    Info : JTAG tap: ecp5.tap tap/device found: 0x41113043 (mfg: 0x021 \
+        (Lattice Semi.), part: 0x1113, ver: 0x4)
+    Warn : gdb services need one or more targets defined
+    ^Cshutdown command invoked
+    ```
+
+3. Sending some 8N1 115200 baud serial through the Tigard UART works:
+
+    ```bash
+    $ tio --local-echo --map OCRNL,ONLCRNL --timestamp-format 24hour-start \
+      /dev/serial/by-id/usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
+    [00:00:00.000] tio v2.5
+    [00:00:00.000] Press ctrl-t q to quit
+    [00:00:00.000] Connected
+    test
+    [00:00:04.845] Disconnected
+    ```
+
+    ![logic analyzer zoomed in on one serial character with timing markers](07_tio_la_zoom_t.png)
+
+4. ... *work in progress*
 
 
 ## Lab Notes
@@ -74,10 +115,10 @@
 
 2. Tigard switches are set for `VTGT` (level shifters) and `JTAG SPI`.
 
-3. Install `openocd`, `screen`, and `tio`:
+3. Install `openocd` and `tio`:
 
    ```bash
-   $ sudo apt install openocd screen tio
+   $ sudo apt install openocd tio
    ```
 
 4. Researching openOCD configs...
