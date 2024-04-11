@@ -27,14 +27,16 @@
    and OrangeCrab on the top.
 
    Logic analyzer wiring is the same as before. Tigard UART and JTAG wiring are
-   new:
+   new. Note that, at least for the openOCD tigard.cfg distro config (see
+   below), JTAG needs to be wired with the jumper labels and header pin labels
+   matching (TDO->TDO and TDI->TDI):
 
    | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
    | ----------- | ------------ | ------- | ---------- | ------------ |
    |             |          GND |         | GND (jtag) |              |
    |             |          TCK |         | TCK        |              |
-   |             |          TDI |         | TDO        |              |
-   |             |          TDO |         | TDI        |              |
+   |             |          TDO |         | TDO        |              |
+   |             |          TDI |         | TDI        |              |
    |             |          TMS |         | TMS        |              |
 
    | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
@@ -75,7 +77,7 @@
 3. Install `openocd`, `screen`, and `tio`:
 
    ```bash
-   $ sudo apt install openocd
+   $ sudo apt install openocd screen tio
    ```
 
 4. Researching openOCD configs...
@@ -133,3 +135,123 @@
 
    - ECP5 distro config includes `expected-id` values for many ECP5 devices
      while orangecrab config only includes one 85F device
+
+7. Possible openocd config file for my setup:
+
+   ```
+   # openocd.cfg for OrangeCrab 85F + Tigard JTAG
+   source [find interface/ftdi/tigard.cfg]
+   source [find fpga/lattice_ecp5.cfg]
+   ```
+
+8. Attempting to run openocd with the equivalent command line config...
+
+    ```bash
+    $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
+    Open On-Chip Debugger 0.12.0
+    Licensed under GNU GPL v2
+    For bug reports, read
+    http://openocd.org/doc/doxygen/bugs.html
+    none separate
+
+    Info : auto-selecting first available session transport "jtag". To \
+        override use 'transport select <transport>'.
+    Info : Listening on port 6666 for tcl connections
+    Info : Listening on port 4444 for telnet connections
+    Warn : An adapter speed is not selected in the init scripts. OpenOCD will \
+        try to run the adapter at the low speed (100 kHz)
+    Warn : To remove this warnings and achieve reasonable communication speed \
+        with the target, set "adapter speed" or "jtag_rclk" in the init scripts.
+    Info : clock speed 100 kHz
+    Error: JTAG scan chain interrogation failed: all ones
+    Error: Check JTAG interface, timings, target power, etc.
+    Error: Trying to use configured scan chain anyway...
+    Error: ecp5.tap: IR capture error; saw 0xff not 0x1
+    Warn : Bypassing JTAG setup events due to errors
+    Warn : gdb services need one or more targets defined
+    ^Cshutdown command invoked
+    ```
+
+   That didn't work. Maybe `JTAG scan chain interrogation failed: all ones` is
+   because TDO and TDI need to be switched? I wasn't sure from the Tigard docs
+   if the TDI and TDO wires are labeled with the intent of being wired in the
+   manner of a PCB JTAG daisy chain (TDI->TDO and TDO->TDI), or if you're
+   supposed to match them to the JTAG header labels like, TDI->TDI and
+   TDO->TDO.
+
+9. After I swapped TDI and TDO, it works. Now the jumper wire labels match the
+   header pin labels (TDI->TDI and TDO->TDO).
+
+    ```bash
+    $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
+    Open On-Chip Debugger 0.12.0
+    Licensed under GNU GPL v2
+    For bug reports, read
+        http://openocd.org/doc/doxygen/bugs.html
+    none separate
+
+    Info : auto-selecting first available session transport "jtag". To \
+        override use 'transport select <transport>'.
+    Info : Listening on port 6666 for tcl connections
+    Info : Listening on port 4444 for telnet connections
+    Warn : An adapter speed is not selected in the init scripts. OpenOCD will \
+        try to run the adapter at the low speed (100 kHz)
+    Warn : To remove this warnings and achieve reasonable communication speed \
+        with the target, set "adapter speed" or "jtag_rclk" in the init scripts.
+    Info : clock speed 100 kHz
+    Info : JTAG tap: ecp5.tap tap/device found: 0x41113043 (mfg: 0x021 \
+        (Lattice Semi.), part: 0x1113, ver: 0x4)
+    Warn : gdb services need one or more targets defined
+    ^Cshutdown command invoked
+    ```
+
+10. Now attempt to find the Tigard's serial port...
+
+    ```bash
+    $ ls /dev/serial/by-id/
+    usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
+    $ cd /dev/serial/by-id/
+    $ file usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
+    usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0: symbolic link \
+        to ../../ttyUSB0
+    ```
+
+11. Try sending some stuff from `tio` and capturing the Tigard UART's TX pin
+    output on the logic analyzer:
+
+    Typing some stuff in `tio` with local echo:
+
+    ```bash
+    $ tio --local-echo --map OCRNL,ONLCRNL --timestamp-format 24hour-start \
+      /dev/serial/by-id/usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
+    [00:00:00.000] tio v2.5
+    [00:00:00.000] Press ctrl-t q to quit
+    [00:00:00.000] Connected
+    test
+    [00:00:04.845] Disconnected
+    ```
+
+    The `--map ...` argument translates the CR from my Enter key into a NL,
+    a CR-NL sequence for local echo to my terminal. Without the mapping, Enter
+    would just echo a CR, then the disconnect message would cover up that line
+    so you couldn't see what I had typed.
+
+    This is what it looks like in the logic analyzer (wide view):
+
+    ![logic analyzer screenshot showing a timeline with data on the RX pin and decoded characters in the protocol analyzer](07_tio_la_wide.png)
+
+    And this is a zoomed in view with timing markers for the first character:
+
+    ![logic analyzer zoomed in on one serial character with timing markers](07_tio_la_zoom_t.png)
+
+    I was sending 8N1 at a requested baud of 115200. The measured time between
+    markers for the first character was 78.2 µs. Calculating the time for 1
+    start bit and 8 data bits, it should take:
+
+    `(1e6 [µs/s]) / (115200 [symbol/s]) * (9 [symbols]) = 78.125 µs`
+
+    So the percentage difference would be:
+
+    `(100 [%]) * (78.2 - 78.125) / 78.2 = 0.0959 %`
+
+    That's pretty close.
