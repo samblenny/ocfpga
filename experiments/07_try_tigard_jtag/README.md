@@ -171,44 +171,52 @@
    below), JTAG needs to be wired with the jumper labels and header pin labels
    matching (TDO->TDO and TDI->TDI):
 
-   | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
-   | ----------- | ------------ | ------- | ---------- | ------------ |
-   |             |          GND |         | GND (jtag) |              |
-   |             |          TCK |         | TCK        |              |
-   |             |          TDO |         | TDO        |              |
-   |             |          TDI |         | TDI        |              |
-   |             |          TMS |         | TMS        |              |
+   **Update**: *Originally I wired up all 8 channels of the logic analyzer and
+   connected all the ground wires in a way that made a lot of possibly
+   problematic loops. The tables below now reflect the simplified wiring that I
+   switched to later (scroll down to note number 18).*
 
-   | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
-   | ----------- | ------------ | ------- | ---------- | ------------ |
-   |             |              |         | RST        | Rst          |
-   |        VTGT |         VTGT |         | 3V3        | 3.3V         |
-   |             |              |         | Aref       | Aref         |
-   |             |              | GND0-7  | GND        | GND          |
-   |             |              |         | A0         | A0           |
-   |             |              |         | A1         | A1           |
-   |             |              |         | A2         | A2           |
-   |             |              |         | A3         | A3           |
-   |             |              |         | A4         | A4 / D24     |
-   |             |              |         | A5         | A5 / D25     |
-   |             |              |         | SCK        | SCK          |
-   |             |              |         | MOSI       | MO           |
-   |             |              |         | MISO       | MI           |
-   |          TX |              | 0       | 0          | RX / D0      |
-   |          RX |              | 1       | 1          | TX / D1      |
-   |         GND |              |         | GND        | GND          |
+   | Tigard     | Logic 8 | OrangeCrab | Feather Spec |
+   | ---------- | ------- | ---------- | ------------ |
+   |  JTAG\_GND |         | GND (jtag) |              |
+   |  JTAG\_TCK |         | TCK        |              |
+   |  JTAG\_TDO |         | TDO        |              |
+   |  JTAG\_TDI |         | TDI        |              |
+   |  JTAG\_TMS |         | TMS        |              |
+   | UART\_VTGT |         |            |              |
+   |  UART\_GND |         |            |              |
+   |            | GND1-3  |            |              |
 
-   | Tigard UART | Tigard JTAG  | Logic 8 | OrangeCrab | Feather Spec |
-   | ----------- | ------------ | ------- | ---------- | ------------ |
-   |             |              | 2       | SDA        | SDA          |
-   |             |              | 3       | SCL        | SCL          |
-   |             |              | 4       | 5          | D5           |
-   |             |              | 5       | 6          | D6           |
-   |             |              | 6       | 9          | D9           |
-   |             |              | 7       | 10         | D10          |
-   |             |              |         | 11         | D11          |
-   |             |              |         | 12         | D12          |
-   |             |              |         | 13         | D13          |
+   | Tigard     | Logic 8 | OrangeCrab | Feather Spec |
+   | ---------- | ------- | ---------- | ------------ |
+   |            |         | RST        | Rst          |
+   | JTAG\_VTGT |         | 3V3        | 3.3V         |
+   |            |         | Aref       | Aref         |
+   |            |         | GND        | GND          |
+   |            |         | A0         | A0           |
+   |            |         | A1         | A1           |
+   |            |         | A2         | A2           |
+   |            |         | A3         | A3           |
+   |            |         | A4         | A4 / D24     |
+   |            |         | A5         | A5 / D25     |
+   |            |         | SCK        | SCK          |
+   |            |         | MOSI       | MO           |
+   |            |         | MISO       | MI           |
+   |  UART\_TX  | 0       | 0          | RX / D0      |
+   |  UART\_RX  | 1       | 1          | TX / D1      |
+   |            | GND0    | GND        | GND          |
+
+   | Tigard     | Logic 8 | OrangeCrab | Feather Spec |
+   | ---------- | ------- | ---------- | ------------ |
+   |            | 2       | SDA        | SDA          |
+   |            | 3       | SCL        | SCL          |
+   |            |         | 5          | D5           |
+   |            |         | 6          | D6           |
+   |            |         | 9          | D9           |
+   |            |         | 10         | D10          |
+   |            |         | 11         | D11          |
+   |            |         | 12         | D12          |
+   |            |         | 13         | D13          |
 
    Also see: https://learn.adafruit.com/adafruit-feather/feather-specification
 

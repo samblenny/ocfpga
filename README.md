@@ -8,7 +8,6 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 ## Experiments
 
 - [07 Try Tigard JTAG](experiments/07_try_tigard_jtag/README.md)
-  (work in progress)
 
 - [06 JTAG Header](experiments/06_jtag_header/README.md)
 
