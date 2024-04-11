@@ -20,7 +20,7 @@
 
 2. Basic `openocd` Tigard JTAG connection works:
 
-    ```bash
+    ```console
     $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
     Open On-Chip Debugger 0.12.0
     Licensed under GNU GPL v2
@@ -45,7 +45,7 @@
 
 3. Sending some 8N1 115200 baud serial through the Tigard UART works:
 
-    ```bash
+    ```console
     $ tio --local-echo --map OCRNL,ONLCRNL --timestamp-format 24hour-start \
       /dev/serial/by-id/usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
     [00:00:00.000] tio v2.5
@@ -117,7 +117,7 @@
 
 3. Install `openocd` and `tio`:
 
-   ```bash
+   ```console
    $ sudo apt install openocd tio
    ```
 
@@ -146,7 +146,7 @@
    OpenOCD scripts directory is usually `/usr/share/openocd/scripts` on Linux
    so, let's see what's there...
 
-    ```bash
+    ```console
     $ cd /usr/share/openocd/scripts
     $ find * -type f | grep -i 'tigard\|orange\|ecp5'
     fpga/lattice_ecp5.cfg
@@ -179,15 +179,15 @@
 
 7. Possible openocd config file for my setup:
 
-   ```
-   # openocd.cfg for OrangeCrab 85F + Tigard JTAG
-   source [find interface/ftdi/tigard.cfg]
-   source [find fpga/lattice_ecp5.cfg]
-   ```
+    ```
+    # openocd.cfg for OrangeCrab 85F + Tigard JTAG
+    source [find interface/ftdi/tigard.cfg]
+    source [find fpga/lattice_ecp5.cfg]
+    ```
 
 8. Attempting to run openocd with the equivalent command line config...
 
-    ```bash
+    ```console
     $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
     Open On-Chip Debugger 0.12.0
     Licensed under GNU GPL v2
@@ -223,7 +223,7 @@
 9. After I swapped TDI and TDO, it works. Now the jumper wire labels match the
    header pin labels (TDI->TDI and TDO->TDO).
 
-    ```bash
+    ```console
     $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
     Open On-Chip Debugger 0.12.0
     Licensed under GNU GPL v2
@@ -248,7 +248,7 @@
 
 10. Now attempt to find the Tigard's serial port...
 
-    ```bash
+    ```console
     $ ls /dev/serial/by-id/
     usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
     $ cd /dev/serial/by-id/
@@ -262,7 +262,7 @@
 
     Typing some stuff in `tio` with local echo:
 
-    ```bash
+    ```console
     $ tio --local-echo --map OCRNL,ONLCRNL --timestamp-format 24hour-start \
       /dev/serial/by-id/usb-SecuringHardware.com_Tigard_V1.1_TG110bb4-if00-port0
     [00:00:00.000] tio v2.5
