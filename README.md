@@ -2,7 +2,7 @@
 
 Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
-![OrangeCrab, Tigard, and logic analyzer mounted in a sandwich of Tamiya universal plates, with lots of wires](experiments/07_try_tigard_jtag/07_tigard_with_wires.jpeg)
+![OrangeCrab, Tigard, and logic analyzer with simplified wiring](experiments/07_try_tigard_jtag/07_simpler_wiring.jpeg)
 
 
 ## Experiments
