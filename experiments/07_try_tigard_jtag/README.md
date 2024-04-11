@@ -137,8 +137,7 @@
    - `openocd` looks for `openocd.cfg` config file in a search path including
      the current directory, `$HOME/.config/openocd`, and `$HOME/.openocd`..
 
-   - Refer to [OpenOCD Project Setup](https://openocd.org/doc/html/OpenOCD-Project-Setup.html)
-     page for info on default config files
+   - Refer to "OpenOCD Project Setup" page for info on default config files
 
 6. [OpenOCD Project Setup](https://openocd.org/doc/html/OpenOCD-Project-Setup.html)
    page notes:
@@ -177,7 +176,7 @@
    - ECP5 distro config includes `expected-id` values for many ECP5 devices
      while orangecrab config only includes one 85F device
 
-7. Possible openocd config file for my setup:
+7. Possible `openocd` config file for my setup:
 
     ```
     # openocd.cfg for OrangeCrab 85F + Tigard JTAG
@@ -185,7 +184,7 @@
     source [find fpga/lattice_ecp5.cfg]
     ```
 
-8. Attempting to run openocd with the equivalent command line config...
+8. Attempting to run `openocd` with the equivalent command line config...
 
     ```console
     $ openocd -f interface/ftdi/tigard.cfg -f fpga/lattice_ecp5.cfg
@@ -273,9 +272,9 @@
     ```
 
     The `--map ...` argument translates the CR from my Enter key into a NL,
-    a CR-NL sequence for local echo to my terminal. Without the mapping, Enter
-    would just echo a CR, then the disconnect message would cover up that line
-    so you couldn't see what I had typed.
+    then the NL into a CR-NL sequence before the local echo to my terminal.
+    Without that mapping, Enter would just echo a CR, and the disconnect
+    message would cover up that line so you couldn't see what I had typed.
 
     This is what it looks like in the logic analyzer (wide view):
 
