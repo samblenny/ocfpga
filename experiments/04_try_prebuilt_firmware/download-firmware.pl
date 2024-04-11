@@ -23,6 +23,12 @@ my $DATA = {
             size => 1592,
         },
         {
+            name => 'foboot-v3.1-orangecrab-r0.2-85F.bit',
+            baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
+            sha2 => '053044a54fdb6e9c92e4a6170f79a98a6c0f59f45eb8c84d710fd2b2d8afda55',
+            size => 415247,
+        },
+        {
             name => 'orangecrab-reboot-85F.bit',
             baseurl => 'https://raw.githubusercontent.com/orangecrab-fpga/production-test-sw/70eaca4e4ad43d82aa99c95e220bf1c68bfd5748/prebuilt/',
             sha2 => '4c4fed24aa15554fad560e2ef46710f1963f11edb0fef503b52fb86e343402b9',
