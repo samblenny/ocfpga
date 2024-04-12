@@ -92,7 +92,7 @@ observe more of what's going on inside the ECP5.
 
    Then connect over telnet in a second terminal:
 
-    ```
+    ```console
     $ telnet localhost 4444
     Trying ::1...
     Connection failed: Connection refused
@@ -191,7 +191,7 @@ observe more of what's going on inside the ECP5.
 
    Attempt to detect supported devices:
 
-    ```
+    ```console
     $ openFPGALoader --scan-usb
     found 6 USB device
     Bus device vid:pid       probe type      manufacturer serial               product
