@@ -125,7 +125,7 @@ parser thing (shows bitstream CRC errors, etc).
    From what I've read of OpenOCD so far, it looks like you can write event
    handlers in TCL to send JTAG commands before and after various other things.
    Potentially, I could look at the ECP5 documentation to find a JTAG command
-   that would tristated the IO pins (particularly the USB pins), then write TCL
+   that would tristate the IO pins (particularly the USB pins), then write TCL
    code to do that when `openocd` halts the ECP5 clock before writing to flash.
 
 
