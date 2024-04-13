@@ -50,7 +50,7 @@ I started off looking at `openocd`, but then I found posts recommending
 `openFPGALoader` is really nice. I particularly like the ECP5 status register
 parser thing (shows bitstream CRC errors, etc).
 
-1. **Set JTAG clock speed to run faster than 100 kHz***:
+1. **Set JTAG clock speed to run faster than 100 kHz**:
 
    This `openocd.cfg` config works well for poking around in `openocd`'s telnet
    shell (`adapter speed 500` sets 500 kHz JTAG clock):
