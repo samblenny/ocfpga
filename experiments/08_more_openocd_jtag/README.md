@@ -15,11 +15,15 @@ with OpenOCD can make the reset behavior more predictable.
    format. I want more information about what's going on with the bootloader
    when bitstreams and rv32 code don't run as expected.
 
-4. Figure out how to make the ECP5 logically unplug itself from USB any time
-   that an OpenOCD JTAG operation might halt the clock for the OrangeCrab
-   bootloader's USB stack.
+4. [**Update**: *never mind... I thought the USB device implementation was
+   causing trouble somehow, but the real problem was a bad USB cable. Wish I
+   didn't would have thought to check that earlier*]
 
-   Based on how the OrangeCrab's RGB LED color freezes when I begin flashing
+   ~~Figure out how to make the ECP5 logically unplug itself from USB any time
+   that an OpenOCD JTAG operation might halt the clock for the OrangeCrab
+   bootloader's USB stack.~~
+
+   ~~Based on how the OrangeCrab's RGB LED color freezes when I begin flashing
    code over JTAG, I'm guessing that JTAG programming leaves the ECP5 IO pin
    drivers in whatever mode they were set for prior to stopping the ECP5's
    clock. Hypothetically, since the pins seem to have output drivers enabled
@@ -28,7 +32,7 @@ with OpenOCD can make the reset behavior more predictable.
    Debian's USB host stack (or individual drivers). That could be why JTAG
    programming seems to hide the bootloader's DFU device from `lsusb` and
    `dfu-util`. (`dmesg` can still see it, and everything works again if I
-   reboot Debian.)
+   reboot Debian.)~~
 
 
 ## Context
@@ -210,6 +214,9 @@ bitstream CRC errors, etc).
 
 4. **Put ECP5 IO pins in HIGHZ during JTAG reprogramming**:
 
+   [**Update**: *There's no need for this. The problem was a bad USB cable.
+   But, it is interesting to know how to send boundary scan commands.*]
+
    I don't see any obvious path to make this happen with `openFPGALoader`
    on its own, but perhaps I can use `openocd` to put to set JTAG boundary scan
    for HIGHZ mode, then follow up with `openFPGALoader`.
@@ -245,20 +252,22 @@ bitstream CRC errors, etc).
     Warn : gdb services need one or more targets defined
     ```
 
-   When I did that `openocd` invocation while observing `watch lsusb` (2s
-   updating of `lsusb`), the DFU device disappeared from the `lsusb` list and
-   the RGB LED changed to dim white (maybe powered by an internal pullup?).
+   [**Update**: *the problem was a bad USB cable*]
 
-   When I tried flashing a riscv example with `openFPGALoader`, it worked fine.
+   ~~When I did that `openocd` invocation while observing `watch lsusb` (2s
+   updating of `lsusb`), the DFU device disappeared from the `lsusb` list and
+   the RGB LED changed to dim white (maybe powered by an internal pullup?).~~
+
+   ~~When I tried flashing a riscv example with `openFPGALoader`, it worked fine.
    But, there was no improvement to my ability to get the DFU device to show
    back up. For that to happen, I still had to shut down (not reboot) my host
    PC, then boot back into Debian. It seems that perhaps powering down my PC is
-   necessary to reset some low-level hardware thing.
+   necessary to reset some low-level hardware thing.~~~
 
-   I'm going to set this aside for now. I think I should just proceed with
+   ~~I'm going to set this aside for now. I think I should just proceed with
    using JTAG and stop worrying about the factory bootloader. It seems to be
    unreliable, and JTAG is more convenient anyway. Perhaps I'll revisit this
-   issue once I have a SoC working with a debug UART and an RV32 core.
+   issue once I have a SoC working with a debug UART and an RV32 core.~~
 
 
 ## Lab Notes
@@ -757,3 +766,21 @@ bitstream CRC errors, etc).
    about plugging in a USB device at all. Like, zero new lines after the
    disconnect message from unplugging the board after I'd booted it in non-DFU
    mode.
+
+7. [**Update**: *the problem was a bad USB cable*]
+
+   When I tried running `watch lsusb` and fiddling with the USB cable, I
+   noticed the DFU device briefly appearing then disappearing. I could make it
+   stay for longer by putting pressure on the cable. When I tried a different
+   USB cable, the DFU device started showing up reliably, even right after JTAG
+   flash programming.
+
+   So, I take back what I said about the bootloader. It seems fine, but my USB
+   cable sure wasn't. Power was okay, but one or more of the other wires had an
+   intermittent fault. That's what I get for using an old cable, I guess.
+
+   So, being able to send boundary scan commands with `openocd` is interesting,
+   but not necessary. I should be able to just use `openFPGALoader` to flash
+   new code and mostly ignore the bootloader. Using JTAG to program flash is
+   pretty fast, and it doesn't require me to awkwardly plug and unplug the
+   cable. So, I think using `openFPGALoader` will be good enough.
