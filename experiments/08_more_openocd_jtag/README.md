@@ -217,9 +217,9 @@ bitstream CRC errors, etc).
    [**Update**: *There's no need for this. The problem was a bad USB cable.
    But, it is interesting to know how to send boundary scan commands.*]
 
-   I don't see any obvious path to make this happen with `openFPGALoader`
+   ~~I don't see any obvious path to make this happen with `openFPGALoader`
    on its own, but perhaps I can use `openocd` to put to set JTAG boundary scan
-   for HIGHZ mode, then follow up with `openFPGALoader`.
+   for HIGHZ mode, then follow up with `openFPGALoader`.~~
 
    OpenOCD lets you write TCL code to send arbitrary JTAG commands. From
    reading about [JTAG boundary scan](https://en.wikipedia.org/wiki/JTAG) on
@@ -262,7 +262,7 @@ bitstream CRC errors, etc).
    But, there was no improvement to my ability to get the DFU device to show
    back up. For that to happen, I still had to shut down (not reboot) my host
    PC, then boot back into Debian. It seems that perhaps powering down my PC is
-   necessary to reset some low-level hardware thing.~~~
+   necessary to reset some low-level hardware thing.~~
 
    ~~I'm going to set this aside for now. I think I should just proceed with
    using JTAG and stop worrying about the factory bootloader. It seems to be
