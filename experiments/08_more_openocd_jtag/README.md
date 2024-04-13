@@ -49,10 +49,10 @@ observe more of what's going on inside the ECP5.
 
 ## Results
 
-I started off looking at `openocd`, but then I found posts recommending
-`openFPGALoader`, so I started looking at that too. It turns out that
-`openFPGALoader` is really nice. I particularly like the ECP5 status register
-parser thing (shows bitstream CRC errors, etc).
+I started off looking only at `openocd`, but then I found posts recommending
+`openFPGALoader`, so I tried it too. Turns out that `openFPGALoader` is really
+nice. I particularly like the ECP5 status register parser thing (shows
+bitstream CRC errors, etc).
 
 1. **Set JTAG clock speed to run faster than 100 kHz**:
 
@@ -92,14 +92,102 @@ parser thing (shows bitstream CRC errors, etc).
     Refresh: DONE
     ```
 
-2. **Write to flash with openocd**: *work in progress*
+2. **Read and Write flash with openocd or openFPGALoader**:
+
+   openFPGALoader can write and read arbitrary regions of flash...
+
+   First write and verify the bootloader at the default offset (0x00):
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/04_try_prebuilt_firmware/prebuilt/
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify \
+        foboot-v3.1-orangecrab-r0.2-85F.bit
+    write to flash
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Open file DONE
+    Parse file DONE
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    00000000 00000000 00000000 00
+    Erasing: [==================================================] 100.00%
+    Done
+    Writing: [==================================================] 100.00%
+    Done
+    Verifying write (May take time)
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    ```
+
+   Then read it back and compare sha1 digests:
+
+    ```console
+    $ du --bytes foboot-v3.1-orangecrab-r0.2-85F.bit
+    415247	foboot-v3.1-orangecrab-r0.2-85F.bit
+    $ openFPGALoader -c tigard --freq 1M --dump-flash --file-size 415247 bootloader.bin
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    dump flash (May take time)
+    Open dump file DONE
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    $ shasum bootloader.bin foboot-v3.1-orangecrab-r0.2-85F.bit
+    79eba51e1f4f9d92f99d0a5907ac01d44924c84a  bootloader.bin
+    79eba51e1f4f9d92f99d0a5907ac01d44924c84a  foboot-v3.1-orangecrab-r0.2-85F.bit
+    ```
+
+   Now do the same thing with RISC-V object code at offset 0x80000 (512 KB):
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/05_try_riscv_examples/dfu_prebuilt/
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 blink_85F.dfu
+    write to flash
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Open file DONE
+    Parse file DONE
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    00080000 00000000 00000000 00
+    Erasing: [==================================================] 100.00%
+    Done
+    Writing: [==================================================] 100.00%
+    Done
+    Verifying write (May take time)
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    $ # The LED is blinking now!
+    $ du --bytes blink_85F.dfu
+    1152	blink_85F.dfu
+    $ openFPGALoader -c tigard --freq 1M --dump-flash -o 0x80000 --file-size 1152 blink.bin
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    dump flash (May take time)
+    Open dump file DONE
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    $ shasum blink.bin blink_85F.dfu
+    8336eafec73479325d8d38e0420bd97c6af2f161  blink.bin
+    8336eafec73479325d8d38e0420bd97c6af2f161  blink_85F.dfu
+    ```
 
 3. **Read ECP5 status register**:
 
-   I think `openFPGALoader` is doing this when it writes to flash. If there is
-   an error, it shows short strings, which, I'm blindly guessing, correspond to
-   error bits that are probably described in the ECP5 family data sheet. For
-   example, it was showing me these errors when I bricked the bootloader by
+   `openFPGALoader` does this well when it writes to flash. If there is
+   an error, it shows strings corresponding to error bits as described in
+   Lattice's
+   [ECP5 and ECP5-5G sysCONFIG User Guide](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD)
+   pdf (see section "4.2. Device Status Register").
+
+   For example, it showed me these errors when I bricked the bootloader by
    flashing blinky firmware at 32 KB (0x8000) instead of 512 KB (0x80000):
 
     ```
@@ -113,25 +201,64 @@ parser thing (shows bitstream CRC errors, etc).
     Error: Failed to program FPGA: std::exception
     ```
 
-    I think this is telling me that, when the ECP5 reset after flashing a
-    blinky in the wrong spot, it detected a CRC error when attempting to read
-    the bootloader bitstream from the external SPI flash chip.
+   I think this is telling me that, when the ECP5 reset after flashing a
+   blinky in the wrong spot, it detected a CRC error when attempting to read
+   the bootloader bitstream from the external SPI flash chip.
 
-    Basically, that's what I was hoping for: more indication of what might be
-    going wrong when bitstream or firmware loading fails.
+   Basically, that's what I was hoping for: more indication of what might be
+   going wrong when bitstream or firmware loading fails.
 
-4. **Put ECP5 IO pins in HIGHZ during JTAG reprogramming**: *work in progress*
+4. **Put ECP5 IO pins in HIGHZ during JTAG reprogramming**:
 
    I don't see any obvious path to make this happen with `openFPGALoader`
-   (which otherwise seems like a great choice for flashing gateware and
-   firmware).
+   on its own, but perhaps I can use `openocd` to put to set JTAG boundary scan
+   for HIGHZ mode, then follow up with `openFPGALoader`.
 
-   From what I've read of OpenOCD so far, it looks like you can write event
-   handlers in TCL to send JTAG commands before and after various other things.
-   Potentially, I could look at the ECP5 documentation to find a JTAG command
-   that would put the IO pins (particularly the USB pins) in a high-impedance
-   state, then write TCL code to do that when `openocd` halts the ECP5 clock
-   before writing to flash.
+   OpenOCD lets you write TCL code to send arbitrary JTAG commands. From
+   reading about [JTAG boundary scan](https://en.wikipedia.org/wiki/JTAG) on
+   wikipedia and some other assorted explain-jtag things I found, it sounds
+   like I need to shift the `HIGHZ` bit pattern into the ECP5's "instruction
+   register". The bit patterns are device-specific, but you can look up the
+   right values to use in BSDL model files. Lattice has BSDL models for various
+   ECP5 device + package combinations on the ECP5 web page's
+   [downloads section](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD).
+
+   According to the orangecrab-fpga/orangecrab-hardware Github repo's
+   [hardware/orangecrab-r0.2.1/FPGA.sh ](https://github.com/orangecrab-fpga/orangecrab-hardware/blob/main/hardware/orangecrab_r0.2.1/FPGA.sch#L45)
+   schematic file, the OrangeCrab 85F appears to use a `LFE5U-85F-8MG285`,
+   where the 285 at the end indicates the BGA package type. Of the four 85F
+   BSDL model files on the Lattice downloads page, it looks like the correct
+   one would be "[BSDL] LFE5U85F CSFBGA285" (file name
+   `BSDLLFE5U85FCSFBGA285.bsm`). In that model file, the `HIGHZ` bit pattern
+   for the instruction register is listed as `00011000` (0b00011000 = 24).
+
+   This seems to work for sending an irscan command without starting the full
+   `openocd` server:
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/08_more_openocd_jtag
+    $ openocd -f openocd.cfg -c 'init; irscan ecp5.tap 24 -endstate DRPAUSE; exit'
+    ...
+    Info : clock speed 100 kHz
+    Info : JTAG tap: ecp5.tap tap/device found: 0x41113043 (mfg: 0x021 \
+        (Lattice Semi.), part: 0x1113, ver: 0x4)
+    Warn : gdb services need one or more targets defined
+    ```
+
+   When I did that `openocd` invocation while observing `watch lsusb` (2s
+   updating of `lsusb`), the DFU device disappeared from the `lsusb` list and
+   the RGB LED changed to dim white (maybe powered by an internal pullup?).
+
+   When I tried flashing a riscv example with `openFPGALoader`, it worked fine.
+   But, there was no improvement to my ability to get the DFU device to show
+   back up. For that to happen, I still had to shut down (not reboot) my host
+   PC, then boot back into Debian. It seems that perhaps powering down my PC is
+   necessary to reset some low-level hardware thing.
+
+   I'm going to set this aside for now. I think I should just proceed with
+   using JTAG and stop worrying about the factory bootloader. It seems to be
+   unreliable, and JTAG is more convenient anyway. Perhaps I'll revisit this
+   issue once I have a SoC working with a debug UART and an RV32 core.
 
 
 ## Lab Notes
@@ -536,3 +663,97 @@ parser thing (shows bitstream CRC errors, etc).
    It works!
 
    This is what I need.
+
+
+### How to put ECP5 IO pins in HIGHZ mode?
+
+6. OpenOCD lets you write TCL code to send arbitrary JTAG commands. From
+   reading about [JTAG boundary scan](https://en.wikipedia.org/wiki/JTAG) on
+   wikipedia and some other assorted explain-jtag things I found, it sounds
+   like I need to shift the `HIGHZ` bit pattern into the ECP5's "instruction
+   register". The bit patterns are device-specific, but you can look up the
+   right values to use in BSDL model files. Lattice has BSDL models for various
+   ECP5 device + package combinations on the ECP5 web page's
+   [downloads section](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD).
+
+   According to the orangecrab-fpga/orangecrab-hardware Github repo's
+   [hardware/orangecrab-r0.2.1/FPGA.sh ](https://github.com/orangecrab-fpga/orangecrab-hardware/blob/main/hardware/orangecrab_r0.2.1/FPGA.sch#L45)
+   schematic file, the OrangeCrab 85F appears to use a `LFE5U-85F-8MG285`,
+   where the 285 at the end indicates the BGA package type. Of the four 85F
+   BSDL model files on the Lattice downloads page, it looks like the correct
+   one would be "[BSDL] LFE5U85F CSFBGA285" (file name
+   `BSDLLFE5U85FCSFBGA285.bsm`). In that model file, the `HIGHZ` bit pattern
+   for the instruction register is listed as `00011000` (0b00011000 = 24).
+
+   Based on that, I'm guessing `irscan ecp5.tap 24` may be the magic `openocd`
+   incantation to invoke HIGHZ mode. So, I guess I'll just try it...
+
+   First start the `openocd` server:
+    ```console
+    $ cd ~/code/ocfpga/experiments/08_more_openocd_jtag
+    $ ls
+    openocd.cfg  README.md
+    $ openocd
+    ...
+    Info : Listening on port 4444 for telnet connections
+    Info : clock speed 100 kHz
+    Info : JTAG tap: ecp5.tap tap/device found: 0x41113043 (mfg: 0x021 \
+        (Lattice Semi.), part: 0x1113, ver: 0x4)
+    ...
+    ```
+
+   Then connect with telnet in a second terminal window and send the irscan:
+
+    ```console
+    $ telnet localhost 4444
+    Trying ::1...
+    Connection failed: Connection refused
+    Trying 127.0.0.1...
+    Connected to localhost.
+    Escape character is '^]'.
+    Open On-Chip Debugger
+    > irscan ecp5.tap 24 -endstate DRPAUSE
+    ```
+
+   That clearly did something... the RGB LED doesn't go out, but it turned from
+   red (was running riscv/button example) to a much dimmer white-ish. Maybe the
+   LED is being powered by internal pullups?
+
+   So, what happens if I reboot the Debian host PC to get a fresh un-glitched
+   USB stack, boot the OrangeCrab in DFU mode, then watch the output of `lsusb`
+   as I send the irscan for HIGHZ? ...
+
+   [*rebooting*]
+
+   The reboot (`sudo reboot`) didn't work, I can't see the DFU device in
+   `lsusb`.
+
+   [*shutting down, then powering back up*]
+
+   Now I can see the DFU device with `watch lsusb`. Trying `openocd` without
+   starting the telnet server:
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/08_more_openocd_jtag
+    $ openocd -f openocd.cfg -c 'init; irscan ecp5.tap 24 -endstate DRPAUSE; exit'
+    ...
+    Info : clock speed 100 kHz
+    Info : JTAG tap: ecp5.tap tap/device found: 0x41113043 (mfg: 0x021 \
+        (Lattice Semi.), part: 0x1113, ver: 0x4)
+    Warn : gdb services need one or more targets defined
+    ```
+
+   After running that, the LED went dim white-ish, and the DFU device
+   disappeared from `watch lsusb`, as if I had unplugged it. Now I will try
+   flashing some code and rebooting into DFU mode...
+
+   [*flashes riscv/button example with openFPGALoader, then rests to DFU mode*]
+
+   Hmm... that's not working. I can see `dmesg` lines like
+   `... usb 1-1: Product: OrangeCrab r0.2 DFU Bootloader v3.1-6-g62e92e2` if
+   I plug in the board *without* holding down the button for DFU mode. But,
+   there is no DFU device in the `lsusb` output. The weird thing is, if I plug
+   in the OrangeCrab while holding the button, nothing shows up in `dmesg`
+   about plugging in a USB device at all. Like, zero new lines after the
+   disconnect message from unplugging the board after I'd booted it in non-DFU
+   mode.
