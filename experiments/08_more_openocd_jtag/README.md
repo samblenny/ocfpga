@@ -45,7 +45,88 @@ observe more of what's going on inside the ECP5.
 
 ## Results
 
-*work in progress*
+I started off looking at `openocd`, but then I found posts recommending
+`openFPGALoader`, so I started looking at that too. It turns out that
+`openFPGALoader` is really nice. I particularly like the ECP5 status register
+parser thing (shows bitstream CRC errors, etc).
+
+1. **Set JTAG clock speed to run faster than 100 kHz***:
+
+   This `openocd.cfg` config works well for poking around in `openocd`'s telnet
+   shell (`adapter speed 500` sets 500 kHz JTAG clock):
+
+    ```tcl
+    # openocd.cfg for Tigard JTAG probe (FT2232H) + OrangeCrab 85F (ECP5)
+    source [find interface/ftdi/tigard.cfg]
+    source [find fpga/lattice_ecp5.cfg]
+
+    # speed unit is kHz
+    adapter speed 500
+    ftdi tdo_sample_edge falling
+
+    # OrangeCrab JTAG is only 5-pin (no reset pins)
+    reset_config none
+    ```
+
+   This works well for running `openFPGALoader` at 1 MHz (`--freq 1M`):
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/05_try_riscv_examples/dfu_prebuilt/
+    $ openFPGALoader --cable tigard --freq 1M -f -o 0x80000 blink_85F.dfu
+    write to flash
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Open file DONE
+    Parse file DONE
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    00080000 00000000 00000000 00
+    Erasing: [==================================================] 100.00%
+    Done
+    Writing: [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    ```
+
+2. **Write to flash with openocd**: *work in progress*
+
+3. **Read ECP5 status register**:
+
+   I think `openFPGALoader` is doing this when it writes to flash. If there is
+   an error, it shows short strings, which, I'm blindly guessing, correspond to
+   error bits that are probably described in the ECP5 family data sheet. For
+   example, it was showing me these errors when I bricked the bootloader by
+   flashing blinky firmware at 32 KB (0x8000) instead of 512 KB (0x80000):
+
+    ```
+    Refresh: FAIL
+    displayReadReg
+        Config Target Selection : 0
+        Std PreAmble
+        SPIm Fail1
+        CRC ERR
+        EXEC Error
+    Error: Failed to program FPGA: std::exception
+    ```
+
+    I think this is telling me that, when the ECP5 reset after flashing a
+    blinky in the wrong spot, it detected a CRC error when attempting to read
+    the bootloader bitstream from the external SPI flash chip.
+
+    Basically, that's what I was hoping for: more indication of what might be
+    going wrong when bitstream or firmware loading fails.
+
+4. **Tristate ECP5 IO pins during JTAG reprogramming**: *work in progress*
+
+   I don't see any obvious path to make this happen with `openFPGALoader`
+   (which otherwise seems like a great choice for flashing gateware and
+   firmware).
+
+   From what I've read of OpenOCD so far, it looks like you can write event
+   handlers in TCL to send JTAG commands before and after various other things.
+   Potentially, I could look at the ECP5 documentation to find a JTAG command
+   that would tristated the IO pins (particularly the USB pins), then write TCL
+   code to do that when `openocd` halts the ECP5 clock before writing to flash.
 
 
 ## Lab Notes
@@ -230,7 +311,7 @@ observe more of what's going on inside the ECP5.
     $ openFPGALoader \
         --cable tigard \
         --freq 1M \
-        --write-flash \
+        -f \
         --file-type raw \
         foboot-v3.1-orangecrab-r0.2-85F.bit
     write to flash
@@ -257,7 +338,7 @@ observe more of what's going on inside the ECP5.
     $ openFPGALoader \
         --cable tigard \
         --freq 1M \
-        --write-flash \
+        -f \
         --file-type raw \
         -o 0x8000 \
         blink_85F.dfu
@@ -330,7 +411,7 @@ observe more of what's going on inside the ECP5.
     $ openFPGALoader-v0.12.1.sh \
         --cable tigard \
         --freq 1M \
-        --write-flash \
+        -f \
         --file-type raw \
         -o 0x8000 \
         blink_85F.dfu
@@ -431,7 +512,7 @@ observe more of what's going on inside the ECP5.
 
     ```console
     $ cd ~/code/ocfpga/experiments/05_try_riscv_examples/dfu_prebuilt/
-    $ openFPGALoader --cable tigard --freq 1M --write-flash -o 0x80000 blink_85F.dfu
+    $ openFPGALoader --cable tigard --freq 1M -f -o 0x80000 blink_85F.dfu
     write to flash
     Jtag frequency : requested 1.00MHz   -> real 1.00MHz
     Open file DONE
