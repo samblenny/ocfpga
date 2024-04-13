@@ -9,7 +9,7 @@ with OpenOCD can make the reset behavior more predictable.
 
 1. Configure OpenOCD to run Tigard interface at faster JTAG clock speed.
 
-2. Figure out how to read and write flash using `openocd`.
+2. Figure out how to read and write flash using `openocd` or `openFPGALoader`.
 
 3. If possible, find a way to display ECP5 status register in human-readable
    format. I want more information about what's going on with the bootloader
@@ -19,12 +19,16 @@ with OpenOCD can make the reset behavior more predictable.
    that an OpenOCD JTAG operation might halt the clock for the OrangeCrab
    bootloader's USB stack.
 
-   Based on how the OrangeCrab's RGB LED color usually freezes while loading
-   code over JTAG (using ecpprog), I'm guessing that JTAG may be halting the
-   ECP5 (or bootloader SoC?) clock without tristating the IO pins. If that
-   happens to the USB pins, it might be responsible for JTAG programming
-   seeming to hide the bootloader's DFU device from `lsusb` and `dfu-util`.
-   (`dmesg` can still see it, and everything works again if I reboot Debian.)
+   Based on how the OrangeCrab's RGB LED color freezes when I begin flashing
+   code over JTAG, I'm guessing that JTAG programming leaves the ECP5 IO pin
+   drivers in whatever mode they were set for prior to stopping the ECP5's
+   clock. Hypothetically, since the pins seem to have output drivers enabled
+   rather than going into high-impedance mode (HIGHZ), the USB data pins could
+   be frozen just like the LED pins. In that case, the stuck pins might confuse
+   Debian's USB host stack (or individual drivers). That could be why JTAG
+   programming seems to hide the bootloader's DFU device from `lsusb` and
+   `dfu-util`. (`dmesg` can still see it, and everything works again if I
+   reboot Debian.)
 
 
 ## Context
@@ -116,7 +120,7 @@ parser thing (shows bitstream CRC errors, etc).
     Basically, that's what I was hoping for: more indication of what might be
     going wrong when bitstream or firmware loading fails.
 
-4. **Tristate ECP5 IO pins during JTAG reprogramming**: *work in progress*
+4. **Put ECP5 IO pins in HIGHZ during JTAG reprogramming**: *work in progress*
 
    I don't see any obvious path to make this happen with `openFPGALoader`
    (which otherwise seems like a great choice for flashing gateware and
@@ -125,8 +129,9 @@ parser thing (shows bitstream CRC errors, etc).
    From what I've read of OpenOCD so far, it looks like you can write event
    handlers in TCL to send JTAG commands before and after various other things.
    Potentially, I could look at the ECP5 documentation to find a JTAG command
-   that would tristate the IO pins (particularly the USB pins), then write TCL
-   code to do that when `openocd` halts the ECP5 clock before writing to flash.
+   that would put the IO pins (particularly the USB pins) in a high-impedance
+   state, then write TCL code to do that when `openocd` halts the ECP5 clock
+   before writing to flash.
 
 
 ## Lab Notes
