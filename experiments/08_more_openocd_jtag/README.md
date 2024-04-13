@@ -17,7 +17,7 @@ with OpenOCD can make the reset behavior more predictable.
 
 4. [**Update**: *never mind... I thought the USB device implementation was
    causing trouble somehow, but the real problem was a bad USB cable. Wish I
-   didn't would have thought to check that earlier*]
+   would have thought to check that earlier. Oh well.*]
 
    ~~Figure out how to make the ECP5 logically unplug itself from USB any time
    that an OpenOCD JTAG operation might halt the clock for the OrangeCrab
