@@ -9,6 +9,9 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 
 ## Experiments
 
+- [09 Try Verilog Examples](experiments/09_try_verilog_examples/README.md)
+  (work in progress)
+
 - [08 More OpenOCD JTAG](experiments/08_more_openocd_jtag/README.md)
 
 - [07 Try Tigard JTAG](experiments/07_try_tigard_jtag/README.md)
