@@ -1,4 +1,4 @@
-<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 OR MIT -->
 <!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # ocfpga
 
@@ -164,13 +164,13 @@ files of different types, from different sources, and with different licenses.
 
 In general, files in this repository mostly fit into four categories:
 
-1. My **MIT or CC-BY-SA-4.0** stuff: lab notes that may include code
+1. My "**MIT OR CC-BY-SA-4.0**" stuff: lab notes that may include code
    snippets
 
-2. My **MIT** stuff: source code, documentation, build files, and prebuilt
+2. My "**MIT**" stuff: source code, documentation, build files, and prebuilt
    binaries for software, such as firmware to run on an RV32 CPU
 
-3. My **CERN-OHL-P-2.0** stuff: source code, documentation, build files, and
+3. My "**CERN-OHL-P-2.0**" stuff: source code, documentation, build files, and
    prebuilt binaries for hardware design specifications, such as gateware
    to configure an FPGA
 
