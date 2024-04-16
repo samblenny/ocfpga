@@ -24,5 +24,6 @@ to change the product ID suffix.
 
 ## Example Code License & Copyright
 
-The examples are MIT licensed. For the full copyright notice, see
-[LICENSE_RISCV_EXAMPLES](LICENSE_RISCV_EXAMPLES).
+The examples are copyright 2020 Gregory Davill, with an MIT license. For a copy
+of the copyright and license notice, see
+[LICENSE_orangecrab-examples](LICENSE_orangecrab-examples)

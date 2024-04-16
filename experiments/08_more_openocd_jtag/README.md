@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # 08 More OpenOCD JTAG
 
 Programming OrangeCrab over JTAG using `ecpprog` is fast when it works, but

@@ -1,4 +1,6 @@
 #!/usr/bin/perl
+# SPDX-License-Identifier: MIT
+# SPDX-FileCopyrightText: Copyright 2024 Sam Blenny
 use v5.30;
 use warnings;
 use File::Temp qw(tempfile);

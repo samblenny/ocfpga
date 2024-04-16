@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # 05 Try Riscv Examples
 
 Goals:

@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # ocfpga
 
 Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
@@ -152,3 +154,36 @@ this repo, keep in mind that I'm using an OrangeCrab r0.2.1 85F.
 - [DigiKey 2077-ORANGECRAB-R0D2-85-ND](https://www.digikey.com/en/products/detail/groupgets-llc/ORANGECRAB-R0D2-85/16894260)
 
 - [GroupGets ORANGECRAB-R0D2-85](https://groupgets.com/products/orange-crab-85f-lattice-ecp5-fpga-development-kit)
+
+
+## Licenses
+
+This repository is structured as a lab notebook describing (hopefully)
+reproducible experiments with FPGA gateware and firmware. As such, there are
+files of different types, from different sources, and with different licenses.
+
+In general, files in this repository mostly fit into four categories:
+
+1. My **MIT or CC-BY-SA-4.0** stuff: lab notes that may include code
+   snippets
+
+2. My **MIT** stuff: source code, documentation, build files, and prebuilt
+   binaries for software, such as firmware to run on an RV32 CPU
+
+3. My **CERN-OHL-P-2.0** stuff: source code, documentation, build files, and
+   prebuilt binaries for hardware design specifications, such as gateware
+   to configure an FPGA
+
+4. Other people's openly-licensed stuff: files copyrighted by people who are
+   not me (e.g. prebuilt binaries that I built using MIT-licensed source code
+   and build files from orangecrab-fpga/orangecrab-examples)
+
+For specifics, check the individual files and folders.
+
+My text files should have SPDX license identifier comments at the top (for
+markdown, view the raw files to see the HTML comments). Files that came from
+elsewhere should be grouped in a folder next to a LICENSE or README file that
+explains their origin and licensing.
+
+For plain-text copies of the licenses used in this repo, refer to the
+[LICENSES](LICENSES) folder.

@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # Headers and Logic Analyzer
 
 Goal: Prepare to use a logic analyzer to watch OrangeCrab pins.

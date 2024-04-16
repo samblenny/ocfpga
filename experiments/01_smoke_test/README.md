@@ -1,3 +1,5 @@
+<!-- SPDX-License-Identifier: CC-BY-SA-4.0 or MIT -->
+<!-- SPDX-FileCopyrightText: Copyright 2024 Sam Blenny -->
 # 01 Smoke Test
 
 Goal here was to smoke test my new OrangeCrab 85F board. Result is that the
