@@ -131,12 +131,12 @@
    Going to all this trouble might seem odd, and unusual compared to normal
    developer practices. But there's carefully considered reasoning behind it.
    Sticking to standard packages of stable distros, and sticking to POSIX
-   syntax as much as possible, helps to avoiding bitrot. Testing the workflow,
-   at least in part, on a BSD-based shell and a GNU/Linux-based shell, helps to
-   ensure I stick to POSIX stuff. All that means I should have less bitrot with
-   less maintenance and better code reusability in the future. Also, separating
-   tasks between operating systems helps to avoid getting my authentication
-   credentials stolen by malware.
+   syntax as much as possible, helps to avoid bitrot. Testing the workflow,
+   at least in part, on a both a BSD-based shell and a GNU/Linux shell, helps
+   ensure I stick to POSIX stuff. All that means I should hopefully have less
+   maintenance and better code reusability in the future. Also, separating
+   tasks between operating systems helps reduce the odds of getting my
+   authentication credentials stolen by malware.
 
    Here's another trick using a similar technique of moderately complex shell
    expressions with backslash line continuations:
@@ -179,21 +179,17 @@
     make: *** [Makefile:44: check-deps] Error 1
     ```
 
-   The point is being able to generate that second the to last line where it
+   The point is being able to generate that second to last line where it
    suggests a `sudo apt install ...` incantation to install missing packages.
-   This approach may seem weird to people used to trusting auto-magical package
-   managers to do the right thing. I do it this way because I don't trust most
-   package managers.
+   This approach may seem weird to people who are used to trusting language
+   level package managers to make extensive modifications to their systems. I
+   do it this way because I don't trust most package managers.
 
-   Anyhow, this `make` rule above, like the last one, uses a mix of `$(...)`
+   Anyhow, the `make` rule above, like the last one, uses a mix of `$(...)`
    make variable substitutions and `$$...` shell variable substitutions to
-   combine shell looping (`for ...; do ...; done`) and shell conditionals (`if
-   ... fi`) with make rule logic (checking relative file timestamps, etc). The
-   result is that I can have conditional logic in my `make` rules while
-   sticking to POSIX syntax.
+   combine shell looping, shell conditionals, and make rule logic. The result
+   is that I can have conditional logic in my `make` rules while staying within
+   the bounds of POSIX `make` syntax.
 
-   You could probably do similar things using GNU extensions to `make`, but
-   doing it that way is less portable and, arguably, perhaps harder to maintain
-   over time. Granted, anything involving Makefile syntax is kind of a hassle.
-   But, it's not too bad once you get used to it. Taking a long-term
-   perspective, the benefits of stability and portability are really nice.
+   You could do similar things using GNU extensions, but I prefer using boring
+   old POSIX stuff and stable-branch distro packages whenever possible.
