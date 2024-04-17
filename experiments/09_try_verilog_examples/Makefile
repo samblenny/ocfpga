@@ -146,16 +146,13 @@ unpack-src: $(BUILD_TRELLIS) $(BUILD_NEXTPNR) $(BUILD_YOSYS)
 # git clone to get the prjtrellis-db as a submodule, just get it from a zip
 # archive and copy the files into place in prjtrellis/database/
 $(BUILD_TRELLIS): $(TRELLIS_TAR) $(DATABASE_ZIP)
-	echo A
 	@if [ ! -d $(BUILD_TRELLIS) ]; then \
-		echo B; \
 		echo "Unpacking $(TRELLIS_TAR) ..."; \
 		mkdir -p build && \
 		shasum -a 256 --check $(TRELLIS_SHA) && \
 		tar -C build -xf $(TRELLIS_TAR); \
 		fi && \
 	if [ ! -d $(BUILD_TRELLIS)/database/ECP5 ]; then \
-		echo C; \
 		echo "Unpacking $(DATABASE_ZIP) ..."; \
 		shasum -a 256 --check $(DATABASE_SHA) && \
 		unzip -o -q -d build $(DATABASE_ZIP) && \
