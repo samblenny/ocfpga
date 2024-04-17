@@ -132,7 +132,7 @@
    developer practices. But there's carefully considered reasoning behind it.
    Sticking to standard packages of stable distros, and sticking to POSIX
    syntax as much as possible, helps to avoid bitrot. Testing the workflow,
-   at least in part, on a both a BSD-based shell and a GNU/Linux shell, helps
+   at least in part, on both a BSD-based shell and a GNU/Linux shell, helps
    ensure I stick to POSIX stuff. All that means I should hopefully have less
    maintenance and better code reusability in the future. Also, separating
    tasks between operating systems helps reduce the odds of getting my
@@ -157,7 +157,7 @@
     		fi; \
     	done; \
     	if [ "$$MISSING_DEPS" = "" ]; \
-    		then echo SUCCESS! Build dependencies are installed; \
+    		then echo "SUCCESS! Build dependencies are installed"; \
     		else echo ERROR: you need to install missing packages; \
     			echo "  try 'sudo apt install $$MISSING_DEPS'"; \
     			false; \
@@ -189,7 +189,6 @@
    make variable substitutions and `$$...` shell variable substitutions to
    combine shell looping, shell conditionals, and make rule logic. The result
    is that I can have conditional logic in my `make` rules while staying within
-   the bounds of POSIX `make` syntax.
-
-   You could do similar things using GNU extensions, but I prefer using boring
-   old POSIX stuff and stable-branch distro packages whenever possible.
+   the bounds of POSIX `make` syntax. You could do similar things using GNU
+   extensions, but I prefer using boring old POSIX stuff and stable-branch
+   distro packages whenever possible.
