@@ -112,13 +112,18 @@ $(LIBTRELLIS_SO): $(ECPPACK_BIN)
 		echo adding symlink: $(LN_ECPUNPACK); \
 		ln -s $(PREFIX)/bin/ecpunpack $(LN_ECPUNPACK); fi
 
-# Compile libtrellis tools (use ecppack as proxy for all the tools)
+# Compile libtrellis tools (use ecppack binary as proxy for all the tools)
 $(ECPPACK_BIN): $(BUILD_TRELLIS)
 	@cd $(BUILD_TRELLIS)/libtrellis && \
 	cmake . -DCMAKE_INSTALL_PREFIX=$(PREFIX) && \
 	make
 
-# Compile nextpnr tools (use ecppack as proxy for all the tools)
+# Compile nextpnr tools
+# CAUTION: This won't compile unless libtrellis was already built and
+# installed. In particular, you need to get the database files from
+# prjtrellis-db and put them in prjtrellis/database/ before building and
+# installing prjtrellis. If nextpnr's make can't find libtrellis.so or the
+# installed database files, it will die with an error.
 $(NEXTPNR_BIN): $(LIBTRELLIS_SO) $(BUILD_NEXTPNR)
 	@cd $(BUILD_NEXTPNR) && \
 	cmake . -DCMAKE_INSTALL_PREFIX=$(PREFIX) \
@@ -139,7 +144,7 @@ unpack-src: $(BUILD_TRELLIS) $(BUILD_NEXTPNR) $(BUILD_YOSYS)
 
 # Verify and unpack prjtrellis source archive. Rather than doing a recursive
 # git clone to get the prjtrellis-db as a submodule, just get it from a zip
-# zip archive and copy the files into place in prjtrellis/database/
+# archive and copy the files into place in prjtrellis/database/
 $(BUILD_TRELLIS): $(TRELLIS_TAR) $(DATABASE_ZIP)
 	echo A
 	@if [ ! -d $(BUILD_TRELLIS) ]; then \
