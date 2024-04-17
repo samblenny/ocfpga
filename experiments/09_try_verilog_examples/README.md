@@ -66,6 +66,14 @@
      [1.4.tar.gz](https://github.com/YosysHQ/prjtrellis/archive/refs/tags/1.4.tar.gz)
      source tarball
 
+   - prjtrellis-db
+     [commit ce8cdaf](https://github.com/YosysHQ/prjtrellis-db/tree/ce8cdafe7a8c718f0ec43895894b668a479ba33f)
+     has ECP5 bitstream database files for the submodule reference in the
+     prjtrellis 1.4 release. The database files need to be either copied or
+     recursively cloned into `prjtrellis/database/`. Since I'm using archives,
+     I got the database files from a github commit archive zip download URL:
+     [ce8cdafe7a8c718f0ec43895894b668a479ba33f.zip](https://github.com/YosysHQ/prjtrellis-db/archive/ce8cdafe7a8c718f0ec43895894b668a479ba33f.zip)
+
 3. My plan is to use `make` to download the source tarballs, verify they match
    expected SHA256 digests, build the tools, then install the tools to `~/bin`.
    Currently I'm working on this in [Makefile](Makefile).
