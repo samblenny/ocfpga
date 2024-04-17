@@ -38,17 +38,22 @@ BUILD_TRELLIS = build/prjtrellis-1.4
 BUILD_DATABASE = build/prjtrellis-db-ce8cdafe7a8c718f0ec43895894b668a479ba33f
 
 # Compiled binaries
-ECPPACK_BIN = build/prjtrellis-1.4/libtrellis/ecppack
-NEXTPNR_BIN = build/nextpnr-nextpnr-0.7/nextpnr-ecp5
+ECPPACK_BIN = $(BUILD_TRELLIS)/libtrellis/ecppack
+NEXTPNR_BIN = $(BUILD_NEXTPNR)/nextpnr-ecp5
+YOSYS_BIN = $(BUILD_YOSYS)/yosys
 
-# Installed libraries
+# Installed library and binary locations (not symlinks)
 LIBTRELLIS_SO = $(PREFIX)/lib/trellis/libtrellis.so
+ECPPACK_INST = $(PREFIX)/bin/ecppack
+NEXTPNR_INST = $(PREFIX)/bin/nextpnr-ecp5
+YOSYS_INST = $(PREFIX)/bin/yosys
 
 # Installed tool symlinks
-LN_DIR = $$HOME/bin
+LN_DIR = $(HOME)/bin
 LN_ECPPACK = $(LN_DIR)/ecppack
 LN_ECPUNPACK = $(LN_DIR)/ecpunpack
 LN_NEXTPNR = $(LN_DIR)/nextpnr-ecp5
+LN_YOSYS = $(LN_DIR)/yosys
 
 # nextpnr build dependencies (.deb packages for Debian or Ubuntu)
 TRELLIS_DEPS = cmake clang python3-dev
@@ -90,17 +95,55 @@ check-deps:
 # confusingly mixed in with a bunch of other stuff. Idea is that it should be
 # pretty safe to do an `rm -r` on $(PREFIX) to uninstall.
 .PHONY: install
-install: $(LIBTRELLIS_SO) $(LN_NEXTPNR)
+install: $(LIBTRELLIS_SO) $(LN_NEXTPNR) $(LN_YOSYS)
 
-# Compile and install nextpnr-ecp5
-$(LN_NEXTPNR): $(NEXTPNR_BIN)
-	cd $(BUILD_NEXTPNR) && make install
-	@if [ ! -L $(LN_NEXTPNR) ]; then \
-		echo adding symlink: $(LN_NEXTPNR); \
-		ln -s $(PREFIX)/bin/nextpnr-ecp5 $(LN_NEXTPNR); fi
+# DANGER! DANGER! DANGER!
+# Be careful to check for possible name and path conflicts here if you use
+# this on a system which installs YosysHQ tools by other means than just this
+# Makefile.
+.PHONY: uninstall
+uninstall:
+	@echo 'To uninstall, you can run these commands (but check them first!):'
+	@echo "  rm $(LN_YOSYS) $(LN_ECPPACK) $(LN_ECPUNPACK) $(LN_NEXTPNR)"
+	@echo "  rm -r $(PREFIX)"
 
-# Install libtrellis tools. This target is set up so the main install target
-# can use a libtrellis.so prerequisite as a proxy for whether all the
+# Install yosys
+$(LN_YOSYS): $(YOSYS_INST)
+	echo adding symlink: $(LN_YOSYS); \
+	ln -s $(YOSYS_INST) $(LN_YOSYS)
+$(YOSYS_INST): $(YOSYS_BIN)
+	cd $(BUILD_YOSYS); \
+	make PREFIX=$(PREFIX) install
+
+# Install nextpnr-ecp5
+$(LN_NEXTPNR): $(NEXTPNR_INST)
+	echo adding symlink: $(LN_NEXTPNR); \
+	ln -s $(NEXTPNR_INST) $(LN_NEXTPNR)
+$(NEXTPNR_INST): $(NEXTPNR_BIN)
+	cd $(BUILD_NEXTPNR); \
+	make install
+
+# Compile yosys
+$(YOSYS_BIN): $(BUILD_YOSYS)
+	@cd $(BUILD_YOSYS); \
+	make -j$$(nproc) PREFIX=$(PREFIX)
+
+# Compile nextpnr tools
+# CAUTION: This won't compile unless libtrellis was already built and
+# installed. In particular, you need to get the database files from
+# prjtrellis-db and put them in prjtrellis/database/ before building and
+# installing prjtrellis. If nextpnr's make can't find libtrellis.so or the
+# installed database files, it will die with an error.
+# ANOTHER CAUTION: Some of this is really RAM intensive, so I'm only using
+# 1 compile thread
+$(NEXTPNR_BIN): $(LIBTRELLIS_SO) $(BUILD_NEXTPNR)
+	@cd $(BUILD_NEXTPNR) && \
+	cmake . -DCMAKE_INSTALL_PREFIX=$(PREFIX) \
+		-DARCH=ecp5 -DTRELLIS_INSTALL_PREFIX=$(PREFIX) && \
+	make -j1
+
+# Install libtrellis tools. This target is set up so the nextpnr compile
+# target can use a libtrellis.so prerequisite as a proxy for whether all the
 # libtrellis tools have been installed.
 $(LIBTRELLIS_SO): $(ECPPACK_BIN)
 	@mkdir -p $$HOME/bin
@@ -112,31 +155,12 @@ $(LIBTRELLIS_SO): $(ECPPACK_BIN)
 		echo adding symlink: $(LN_ECPUNPACK); \
 		ln -s $(PREFIX)/bin/ecpunpack $(LN_ECPUNPACK); fi
 
-# Compile libtrellis tools (use ecppack binary as proxy for all the tools)
+# Compile libtrellis tools (use ecppack binary as proxy for all the tools).
+# These must be compiled and installed as a dependency of compiling nextpnr.
 $(ECPPACK_BIN): $(BUILD_TRELLIS)
 	@cd $(BUILD_TRELLIS)/libtrellis && \
 	cmake . -DCMAKE_INSTALL_PREFIX=$(PREFIX) && \
-	make
-
-# Compile nextpnr tools
-# CAUTION: This won't compile unless libtrellis was already built and
-# installed. In particular, you need to get the database files from
-# prjtrellis-db and put them in prjtrellis/database/ before building and
-# installing prjtrellis. If nextpnr's make can't find libtrellis.so or the
-# installed database files, it will die with an error.
-$(NEXTPNR_BIN): $(LIBTRELLIS_SO) $(BUILD_NEXTPNR)
-	@cd $(BUILD_NEXTPNR) && \
-	cmake . -DCMAKE_INSTALL_PREFIX=$(PREFIX) \
-		-DARCH=ecp5 -DTRELLIS_INSTALL_PREFIX=$(PREFIX) && \
-	make
-
-$(LIBTRELLIS_SO): $(BUILD_TRELLIS)
-
-# Compile yosys
-$(YOSYS_BIN): $(BUILD_YOSYS)
-#	@cd $(BUILD_YOSYS) && \
-#	cmake -DCMAKE_INSTALL_PREFIX=$(PREFIX) . && \
-#	make
+	make -j$$(nproc)
 
 # Verify and unpack all the source archives
 .PHONY: unpack-src
