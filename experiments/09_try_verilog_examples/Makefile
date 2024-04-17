@@ -30,10 +30,31 @@ YOSYS_B = build/yosys-yosys-0.40
 NEXTPNR_B = build/nextpnr-nextpnr-0.7
 TRELLIS_B = build/prjtrellis-1.4
 
+# nextpnr build dependencies (.deb packages for Debian or Ubuntu)
+NEXTPNR_DEPS = cmake clang python3-dev libboost-all-dev libeigen3-dev
+
 
 # Default target is usage message
 all:
 	@echo "available targets: get-src unpack-src clean dist-clean"
+
+# Check build dependencies for missing dev packages
+check-deps:
+	@echo "Checking for build dependencies with 'dpkg -s' ..."
+	@MISSING_DEPS=""; \
+	for dep in $(NEXTPNR_DEPS); do \
+		if dpkg -s $$dep 2>/dev/null >/dev/null; \
+			then echo "  $$dep: OK"; \
+			else MISSING_DEPS="$$MISSING_DEPS $$dep"; \
+				echo "  $$dep: MISSING"; \
+		fi; \
+	done; \
+	if [ "$$MISSING_DEPS" = "" ]; \
+		then echo SUCCESS! Build dependencies are installed; \
+		else echo ERROR: you need to install missing packages; \
+			echo "  try 'sudo apt install $$MISSING_DEPS'"; \
+			false; \
+	fi
 
 # Unpack sources into build dir
 unpack-src: $(YOSYS_TAR) $(NEXTPNR_TAR) $(TRELLIS_TAR)
@@ -77,4 +98,4 @@ clean:
 dist-clean:
 	rm -rf build cache
 
-.PHONY: all get-src unpack-src clean dist-clean
+.PHONY: all get-src unpack-src check-deps clean dist-clean
