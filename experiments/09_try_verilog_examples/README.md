@@ -52,7 +52,9 @@
      [0.40 release](https://github.com/YosysHQ/yosys/releases/tag/yosys-0.40)
      page with a link to
      [yosys-0.40.tar.gz](https://github.com/YosysHQ/yosys/archive/refs/tags/yosys-0.40.tar.gz)
-     source tarball
+     source tarball. Also, the Makefile for yosys 0.40 includes a step to
+     automatically download and build
+     [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/commit/0cd90d0)
 
    - nextpnr
      [0.7 release](https://github.com/YosysHQ/nextpnr/releases/tag/nextpnr-0.7)
@@ -261,3 +263,15 @@
    if you don't want to use the default install directory of `/usr/local`. The
    compile time for `nextpnr` is very long. It's not fun to wait for the build
    to finish only to discover during `make install` that the PREFIX is wrong.
+
+5. Current status: Makefile downloads, builds, and installs libtrellis tools
+   and nextpnr-ecp5. Now I need to teach it how to build and install yosys.
+
+   [*works on yosys make targets*]
+
+   It seems the yosys Makefile automatically downloads and builds a thing
+   called `ABC`, which is used to optimize for delay when mapping networks to
+   LUTs. From reading the yosys 0.40 release's
+   [Makefile](https://github.com/YosysHQ/yosys/blob/yosys-0.40/Makefile#L163-L172),
+   it looks like the ABC source code comes from
+   [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/commit/0cd90d0).
