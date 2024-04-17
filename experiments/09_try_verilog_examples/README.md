@@ -54,7 +54,7 @@
      [yosys-0.40.tar.gz](https://github.com/YosysHQ/yosys/archive/refs/tags/yosys-0.40.tar.gz)
      source tarball. Also, the Makefile for yosys 0.40 includes a step to
      automatically download and build
-     [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/commit/0cd90d0)
+     [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/tree/0cd90d0d2c5338277d832a1d890bed286486bcf5)
 
    - nextpnr
      [0.7 release](https://github.com/YosysHQ/nextpnr/releases/tag/nextpnr-0.7)
@@ -274,4 +274,4 @@
    LUTs. From reading the yosys 0.40 release's
    [Makefile](https://github.com/YosysHQ/yosys/blob/yosys-0.40/Makefile#L163-L172),
    it looks like the ABC source code comes from
-   [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/commit/0cd90d0).
+   [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/tree/0cd90d0d2c5338277d832a1d890bed286486bcf5).
