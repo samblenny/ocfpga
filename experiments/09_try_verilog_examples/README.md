@@ -16,6 +16,8 @@
 
 *work in progress*
 
+1. Building libtrellis tools and nextpnr from source is *slow*.
+
 
 ## Lab Notes
 
@@ -192,3 +194,62 @@
    the bounds of POSIX `make` syntax. You could do similar things using GNU
    extensions, but I prefer using boring old POSIX stuff and stable-branch
    distro packages whenever possible.
+
+4. Continuing to work on my Makefile...
+
+   After trying `apt install libboost-all-dev`, which wanted to install 400+ MB
+   of random stuff, I decided to narrow it down to just the specific `libboost`
+   packages listed in the nextpnr readme...
+
+    ```console
+    $ sudo apt install  libboost-dev libboost-filesystem-dev libboost-thread-dev \
+      libboost-program-options-dev libboost-iostreams-dev libboost-dev \
+      libeigen3-dev
+    $ make check-deps
+    Checking for build dependencies with 'dpkg -s' ...
+      cmake: OK
+      clang: OK
+      python3-dev: OK
+      libboost-dev: OK
+      libboost-filesystem-dev: OK
+      libboost-thread-dev: OK
+      libboost-program-options-dev: OK
+      libboost-iostreams-dev: OK
+      libboost-dev: OK
+      libeigen3-dev: OK
+    SUCCESS! Build dependencies are installed
+    ```
+
+   Reading further in the nextpnr readme, it says I need to build prjtrellis
+   first so I can specify its install location to `cmake`. So, now I'll work
+   on Makefile to add rules to install libtrellis/tools.
+
+   [*time passes... works on Makefile*]
+
+   After checking the dependencies for all three source packages and adding
+   them to my Makefile, it looks like I need to install more stuff:
+
+    ```console
+    $ sudo apt install  bison flex libreadline-dev gawk tcl-dev graphviz xdot \
+      libboost-system-dev libboost-python-dev
+    ```
+
+   [*more work on Makefile*]
+
+   It turns out that if you use the release tarball for prjtrellis, rather than
+   doing a recursive git clone, `nextpnr`'s make will get mad about missing
+   database files. The database files it wants are from
+   [YosysHQ/prjtrellis-db](https://github.com/YosysHQ/prjtrellis-db). For the
+   `1.4` tag of prjtrellis, the prjtrellis-db submodule reference is for
+   [commit ce8cdaf](https://github.com/YosysHQ/prjtrellis-db/tree/ce8cdafe7a8c718f0ec43895894b668a479ba33f).
+
+   Since I've been building my Makefile around tarballs and SHA256 digests, I
+   will try making Github zip archive URL for that commit rather than doing the
+   git recursive clone thing.
+
+   [*more work on Makefile*]
+
+   It's important to specify `-DCMAKE_INSTALL_PREFIX=...` for `nextpnr` `cmake`
+   if you don't want to use the default install directory of `/usr/local`. The
+   compile time for `nextpnr` is very long. It's not fun to wait for the build
+   to finish only to discover during `make install` that the PREFIX is wrong.
