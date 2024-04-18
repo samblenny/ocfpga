@@ -269,9 +269,27 @@
 
    [*works on yosys make targets*]
 
-   It seems the yosys Makefile automatically downloads and builds a thing
-   called `ABC`, which is used to optimize for delay when mapping networks to
-   LUTs. From reading the yosys 0.40 release's
+   The yosys Makefile automatically downloads and builds a thing called `ABC`,
+   which is used to optimize for delay when mapping networks to LUTs. From
+   reading the yosys 0.40 release's
    [Makefile](https://github.com/YosysHQ/yosys/blob/yosys-0.40/Makefile#L163-L172),
-   it looks like the ABC source code comes from
+   the ABC source code comes from
    [YosysHQ/abc commit 0cd90d0](https://github.com/YosysHQ/abc/tree/0cd90d0d2c5338277d832a1d890bed286486bcf5).
+
+   Compiling is slow enough that I've been running a second terminal with `top`
+   to monitor CPU and RAM use. Compiling yosys is mostly CPU-bound with low RAM
+   usage. Nextpnr was CPU-bound at times, but some of the database related
+   stages were RAM-bound, using up to 700 MB of swap on a box with 4 GB of RAM.
+
+6. [Makefile](Makefile) seems to be ready. This works:
+
+    ```console
+    $ make install
+    ...
+    $ ecppack --version
+    Project Trellis ecppack Version 4a27146
+    $ nextpnr-ecp5 --version
+    "nextpnr-ecp5" -- Next Generation Place and Route (Version 3832512)
+    $ yosys --version
+    Yosys 0.40 (git sha1 a1bb0255d65, g++ 12.2.0-14 -fPIC -Os)
+    ```
