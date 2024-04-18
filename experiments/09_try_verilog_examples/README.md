@@ -601,7 +601,7 @@
     rm pwm_rainbow.bit pwm_rainbow_out.config pwm_rainbow.ys pwm_rainbow.json
     ```
 
-   Looks good. Now try flashing it...
+    Looks good. Now try flashing it...
 
     ```console
     $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 pwm_rainbow.dfu
@@ -623,10 +623,10 @@
     Refresh: DONE
     ```
 
-   That works! The LED is doing a nice smooth rainbow fade. It's smoother and a
-   lot less frantic looking compared to the bootloader.
+    That works! The LED is doing a nice smooth rainbow fade. It's smoother and a
+    lot less frantic looking compared to the bootloader.
 
-   Now save a copy of `pwm_rainbow.dfu` to my [prebuilt](prebuilt) folder...
+    Now save a copy of `pwm_rainbow.dfu` to my [prebuilt](prebuilt) folder...
 
     ```console
     $ cd ~/code/ocfpga/experiments/09_try_verilog_examples
