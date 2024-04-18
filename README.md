@@ -13,6 +13,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
   (nope)
 
 - [09 Try Verilog Examples](experiments/09_try_verilog_examples/README.md)
+  (includes .dfu files)
 
 - [08 More OpenOCD JTAG](experiments/08_more_openocd_jtag/README.md)
   (also, openFPGALoader + Tigard examples)
@@ -22,8 +23,10 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - [06 JTAG Header](experiments/06_jtag_header/README.md)
 
 - [05 Try Riscv Examples](experiments/05_try_riscv_examples/README.md)
+  (includes .dfu files)
 
 - [04 Try Prebuilt Firmware](experiments/04_try_prebuilt_firmware/README.md)
+  (includes .dfu files)
 
 - [03 Headers and Logic Analyzer](experiments/03_headers_and_logic_analyzer/README.md)
 
