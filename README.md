@@ -25,8 +25,8 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 - [05 Try Riscv Examples](experiments/05_try_riscv_examples)
   (includes .dfu files)
 
-- [04 Try Prebuilt Firmware](experiments/04_try_prebuilt_firmware)
-  (includes .dfu files)
+- [04 Try Prebuilt Firmware](experiments/04_try_prebuilt_firmware/README.md)
+  (links to prebuilt .dfu files)
 
 - [03 Headers and Logic Analyzer](experiments/03_headers_and_logic_analyzer/README.md)
 
