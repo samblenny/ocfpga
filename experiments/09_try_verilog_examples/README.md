@@ -5,16 +5,14 @@
 
 ## Goals:
 
-1. Install [YosysHQ](https://github.com/YosysHQ) CAD suite including `yosys`,
+1. Install [YosysHQ](https://github.com/YosysHQ) CAD tools including `yosys`,
    `nextpnr`, and `ecppack`.
 
-2. Build and run examples from
+2. Build and run the blink and pwm_rainbow examples from
    [orangecrab-examples/verilog/](https://github.com/orangecrab-fpga/orangecrab-examples/tree/main/verilog)
 
 
 ## Results
-
-*work in progress*
 
 1. Compiling these tools from scratch is kinda slow, but it has the advantage
    of using (hopefully stable) release versions rather than nightlies. If you
@@ -107,11 +105,49 @@
     Yosys 0.40 (git sha1 a1bb0255d65, g++ 12.2.0-14 -fPIC -Os)
     ```
 
+3. Building the orangecrab-examples/verilog examples for
+   [verilog/blink](https://github.com/orangecrab-fpga/orangecrab-examples/blob/02358e7f53f5e3b450e142bc343ca9c7ae3cb5a9/verilog/blink/)
+   and
+   [verilog/pwm_rainbow](https://github.com/orangecrab-fpga/orangecrab-examples/blob/02358e7f53f5e3b450e142bc343ca9c7ae3cb5a9/verilog/pwm_rainbow/)
+   was easy. I didn't need to modify the existing Makefiles.
 
-2. ...
+   To build the blink example for OrangeCrab 85F and load it over JTAG using a
+   Tigard board:
+
+    ```console
+    $ cd ~/code/orangecrab-examples/verilog/blink
+    $ make DENSITY=85F
+    ...
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 blink.dfu
+    ...
+    ```
+
+   The result was a cycling LED pattern of red, green, amber, off.
+
+   To build the pwm_rainbow example for OrangeCrab 85F and load it over JTAG
+   using a Tigard board:
+
+    ```console
+    $ cd ~/code/orangecrab-examples/verilog/pwm_rainbow
+    $ make DENSITY=85F
+    ...
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 pwm_rainbow.dfu
+    ...
+    ```
+
+   Yosys and nextpnr output a lot of log messages. Many of them are obscure and
+   difficult to understand, but there are also some very useful messages about
+   timing closure and LUT usage. For examples, check out the snippets in my lab
+   notes below.
+
+4. I saved prebuilt binaries for `blink.dfu` and `pwm_rainbow.dfu` here in the
+   [./prebuilt](prebuilt) folder.
 
 
 ## Lab Notes
+
+
+### Build and install YosysHQ EDA tools
 
 1. The README for [YosysHQ](https://github.com/YosysHQ), gives links to their
    OSS CAD suite, along with a commercial CAD suite called Tabby CAD. Until
@@ -390,3 +426,209 @@
    rebuilt from scratch with `make install`. It worked fine. Build and install
    took 39 minutes to finish using a 1.4 GHz Core i5-4260U with 4 GB RAM, SATA
    SSD, and Debian Bookworm.
+
+
+### Build and run OrangeCrab Verilog examples
+
+8. Take a look at the orangecrab-examples/verilog/blink
+   [Makefile](https://github.com/orangecrab-fpga/orangecrab-examples/blob/02358e7f53f5e3b450e142bc343ca9c7ae3cb5a9/verilog/blink/Makefile)...
+
+    ```console
+    $ cd ~/code/orangecrab-examples/verilog/blink
+    $ less Makefile
+    ...
+    ```
+
+   The first thing I see notice is `DENSITY=25F` So, it looks like I will need
+   to use `make DENSITY=85F ...`. So, I'll try it...
+
+    ```console
+    $ cd ~/code/orangecrab-examples/verilog/blink
+    $ make DENSITY=85F
+    yosys -p "read_verilog blink.v; synth_ecp5 -json blink.json"
+    ...
+    nextpnr-ecp5 --json blink.json --textcfg blink_out.config --85k --package CSFBGA285 --lpf ../orangecrab_r0.2.1.pcf
+    Info: constraining clock net 'clk48' to 48.00 MHz
+    ...
+    Info: pin 'rgb_led0_r$tr_io' constrained to Bel 'X126/Y83/PIOA'.
+    Info: pin 'rgb_led0_g$tr_io' constrained to Bel 'X126/Y86/PIOA'.
+    Info: pin 'rgb_led0_b$tr_io' constrained to Bel 'X126/Y50/PIOC'.
+    Info: pin 'clk48$tr_io' constrained to Bel 'X71/Y0/PIOA'.
+    ...
+    Info: Device utilisation:
+    Info: 	          TRELLIS_IO:     4/  365     1%
+    Info: 	                DCCA:     1/   56     1%
+    Info: 	              DP16KD:     0/  208     0%
+    Info: 	          MULT18X18D:     0/  156     0%
+    Info: 	              ALU54B:     0/   78     0%
+    Info: 	             EHXPLLL:     0/    4     0%
+    Info: 	             EXTREFB:     0/    2     0%
+    Info: 	                DCUA:     0/    2     0%
+    Info: 	           PCSCLKDIV:     0/    2     0%
+    Info: 	             IOLOGIC:     0/  224     0%
+    Info: 	            SIOLOGIC:     0/  141     0%
+    Info: 	                 GSR:     0/    1     0%
+    Info: 	               JTAGG:     0/    1     0%
+    Info: 	                OSCG:     0/    1     0%
+    Info: 	               SEDGA:     0/    1     0%
+    Info: 	                 DTR:     0/    1     0%
+    Info: 	             USRMCLK:     0/    1     0%
+    Info: 	             CLKDIVF:     0/    4     0%
+    Info: 	           ECLKSYNCB:     0/   10     0%
+    Info: 	             DLLDELD:     0/    8     0%
+    Info: 	              DDRDLL:     0/    4     0%
+    Info: 	             DQSBUFM:     0/   14     0%
+    Info: 	     TRELLIS_ECLKBUF:     0/    8     0%
+    Info: 	        ECLKBRIDGECS:     0/    2     0%
+    Info: 	                DCSC:     0/    2     0%
+    Info: 	          TRELLIS_FF:    26/83640     0%
+    Info: 	        TRELLIS_COMB:    35/83640     0%
+    Info: 	        TRELLIS_RAMW:     0/10455     0%
+    ...
+    Info: Max frequency for clock '$glbnet$clk48$TRELLIS_IO_IN': 307.69 MHz (PASS at 48.00 MHz)
+
+    Info: Max delay posedge $glbnet$clk48$TRELLIS_IO_IN -> <async>: 2.47 ns
+    ...
+    Info: Program finished normally.
+    ecppack --compress --freq 38.8 --input blink_out.config --bit blink.bit
+    cp -a blink.bit blink.dfu
+    dfu-suffix -v 1209 -p 5af0 -a blink.dfu
+    rm blink.json blink.bit blink_out.config
+    ```
+
+   That seems good so far. I don't like the OrangeCrab's DFU reset procedure
+   where you have to unplug the USB cable, hold the button, then plug the cable
+   back in. Since I have JTAG programming set up, I'll use `openFPGALoader`:
+
+    ```console
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 blink.dfu
+    write to flash
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Open file DONE
+    Parse file DONE
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    00080000 00000000 00000000 00
+    Erasing: [==================================================] 100.00%
+    Done
+    Writing: [==================================================] 100.00%
+    Done
+    Verifying write (May take time)
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    ```
+
+   It works! The LED is cycling through a pattern of red, green, amber, off.
+
+9. Save a copy of `blink.dfu` to my [prebuilt](prebuilt) folder:
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/09_try_verilog_examples
+    $ mkdir prebuilt
+    $ cp ../../../orangecrab-examples/verilog/blink/blink.dfu prebuilt/
+    $ cp ../../LICENSES/LICENSE_orangecrab-examples prebuilt/
+    $ cat <<EOF > prebuilt/README.md
+    # orangecrab-examples/verilog prebuilt binaries
+
+    These OrangeCrab 85F DFU binaries were built from the source code at
+    https://github.com/orangecrab-fpga/orangecrab-examples/tree/main/verilog
+    EOF
+    ```
+
+10. Try the
+    [verilog/pwm_rainbow](https://github.com/orangecrab-fpga/orangecrab-examples/tree/02358e7f53f5e3b450e142bc343ca9c7ae3cb5a9/verilog/pwm_rainbow)
+    example:
+
+    ```console
+    $ cd ~/code/orangecrab-examples/verilog/pwm_rainbow
+    $ less readme.md
+    $ less Makefile
+    $ make DENSITY=85F
+    yosys -s "pwm_rainbow.ys"
+    ...
+    -- Executing script file `pwm_rainbow.ys' --
+    ...
+    nextpnr-ecp5 --json pwm_rainbow.json --textcfg pwm_rainbow_out.config --85k --package CSFBGA285 --lpf ../orangecrab_r0.2.1.pcf
+    ...
+    Info: pin 'usr_btn$tr_io' constrained to Bel 'X0/Y83/PIOC'.
+    Info: pin 'rst_n$tr_io' constrained to Bel 'X15/Y95/PIOB'.
+    Info: pin 'rgb_led0_r$tr_io' constrained to Bel 'X126/Y83/PIOA'.
+    Info: pin 'rgb_led0_g$tr_io' constrained to Bel 'X126/Y86/PIOA'.
+    Info: pin 'rgb_led0_b$tr_io' constrained to Bel 'X126/Y50/PIOC'.
+    Info: pin 'clk48$tr_io' constrained to Bel 'X71/Y0/PIOA'.
+    ...
+    Info: Device utilisation:
+    Info: 	          TRELLIS_IO:     6/  365     1%
+    Info: 	                DCCA:     1/   56     1%
+    Info: 	              DP16KD:     0/  208     0%
+    Info: 	          MULT18X18D:     2/  156     1%
+    Info: 	              ALU54B:     0/   78     0%
+    Info: 	             EHXPLLL:     0/    4     0%
+    Info: 	             EXTREFB:     0/    2     0%
+    Info: 	                DCUA:     0/    2     0%
+    Info: 	           PCSCLKDIV:     0/    2     0%
+    Info: 	             IOLOGIC:     0/  224     0%
+    Info: 	            SIOLOGIC:     0/  141     0%
+    Info: 	                 GSR:     0/    1     0%
+    Info: 	               JTAGG:     0/    1     0%
+    Info: 	                OSCG:     0/    1     0%
+    Info: 	               SEDGA:     0/    1     0%
+    Info: 	                 DTR:     0/    1     0%
+    Info: 	             USRMCLK:     0/    1     0%
+    Info: 	             CLKDIVF:     0/    4     0%
+    Info: 	           ECLKSYNCB:     0/   10     0%
+    Info: 	             DLLDELD:     0/    8     0%
+    Info: 	              DDRDLL:     0/    4     0%
+    Info: 	             DQSBUFM:     0/   14     0%
+    Info: 	     TRELLIS_ECLKBUF:     0/    8     0%
+    Info: 	        ECLKBRIDGECS:     0/    2     0%
+    Info: 	                DCSC:     0/    2     0%
+    Info: 	          TRELLIS_FF:    77/83640     0%
+    Info: 	        TRELLIS_COMB:   215/83640     0%
+    Info: 	        TRELLIS_RAMW:     0/10455     0%
+    ...
+    Info: Max frequency for clock '$glbnet$clk48$TRELLIS_IO_IN': 89.08 MHz (PASS at 48.00 MHz)
+
+    Info: Max delay <async>                             -> posedge $glbnet$clk48$TRELLIS_IO_IN: 1.57 ns
+    Info: Max delay posedge $glbnet$clk48$TRELLIS_IO_IN -> <async>                            : 7.48 ns
+    ...
+    Info: Program finished normally.
+    ecppack --compress --freq 38.8 --input pwm_rainbow_out.config --bit pwm_rainbow.bit
+    cp -a pwm_rainbow.bit pwm_rainbow.dfu
+    dfu-suffix -v 1209 -p 5af0 -a pwm_rainbow.dfu
+    rm pwm_rainbow.bit pwm_rainbow_out.config pwm_rainbow.ys pwm_rainbow.json
+    ```
+
+   Looks good. Now try flashing it...
+
+    ```console
+    $ openFPGALoader -c tigard --freq 1M -f --file-type raw --verify -o 0x80000 pwm_rainbow.dfu
+    write to flash
+    Jtag frequency : requested 1.00MHz   -> real 1.00MHz
+    Open file DONE
+    Parse file DONE
+    Enable configuration: DONE
+    SRAM erase: DONE
+    Detected: Winbond W25Q128 256 sectors size: 128Mb
+    00080000 00000000 00000000 00
+    Erasing: [==================================================] 100.00%
+    Done
+    Writing: [==================================================] 100.00%
+    Done
+    Verifying write (May take time)
+    Read flash : [==================================================] 100.00%
+    Done
+    Refresh: DONE
+    ```
+
+   That works! The LED is doing a nice smooth rainbow fade. It's smoother and a
+   lot less frantic looking compared to the bootloader.
+
+   Now save a copy of `pwm_rainbow.dfu` to my [prebuilt](prebuilt) folder...
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/09_try_verilog_examples
+    $ cp ../../../orangecrab-examples/verilog/pwm_rainbow/pwm_rainbow.dfu prebuilt/
+    ```
