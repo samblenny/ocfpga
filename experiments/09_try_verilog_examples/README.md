@@ -29,9 +29,10 @@
    uninstall the yosyshq tools during testing (`rm -r ~/bin/yosyshq`).
 
    If you want a different install location for the binaries, you can do `make
-   PREFIX=...` already have other YosysHQ tools installed in `~/bin`, you might
-   want to revise the Makefile. To see the release versions I used, read the
-   Makefile.
+   PREFIX=...`. If you already have other YosysHQ tools installed in `~/bin`,
+   you might want to revise the Makefile.
+
+   To see the source code release versions I used, read the Makefile.
 
    As-is, this Makefile will only work on Debian and Debian-based distros (e.g.
    Ubuntu) that have `dpkg` and `apt`. But, you could modify it simply enough.
