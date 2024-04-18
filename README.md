@@ -10,7 +10,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 ## Experiments
 
 - [10 Try VexRiscv](experiments/10_try_vexriscv/README.md)
-  (work in progress)
+  (nope)
 
 - [09 Try Verilog Examples](experiments/09_try_verilog_examples/README.md)
 
