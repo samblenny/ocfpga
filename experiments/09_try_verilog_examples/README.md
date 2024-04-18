@@ -16,7 +16,98 @@
 
 *work in progress*
 
-1. Building libtrellis tools and nextpnr from source is *slow*.
+1. Compiling these tools from scratch is kinda slow, but it has the advantage
+   of using (hopefully stable) release versions rather than nightlies. If you
+   enjoy adventure and danger, you might prefer a prebuilt nightly release from
+   [YosysHQ/oss-cad-suite-build](https://github.com/YosysHQ/oss-cad-suite-build).
+
+2. I wrote a [Makefile](Makefile) to download, build, and install libtrellis tools
+   (`ecppack`), `nextpnr-ecp5`, and `yosys`. The default install prefix is
+   `~/bin/yosyshq`. But, `make install` also creates symlinks for
+   `~/bin/yosys`, `~/bin/nextpnr-ecp5`, and `~/bin/ecppack`. This is convenient
+   for me since I already have `$HOME/bin` in my path and wanted an easy way to
+   uninstall the yosyshq tools during testing (`rm -r ~/bin/yosyshq`).
+
+   If you want a different install location for the binaries, you can do `make
+   PREFIX=...` already have other YosysHQ tools installed in `~/bin`, you might
+   want to revise the Makefile. To see the release versions I used, read the
+   Makefile.
+
+   As-is, this Makefile will only work on Debian and Debian-based distros (e.g.
+   Ubuntu) that have `dpkg` and `apt`. But, you could modify it simply enough.
+
+   Usage:
+
+   First, run `make check-deps` to check if you have the dev dependency packages
+   installed which are needed to build libtrellis tools, nextpnr, and yosys:
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/09_try_verilog_examples
+    $ make check-deps
+    Checking for build dependencies with 'dpkg -s' ...
+      cmake: OK
+      clang: OK
+      python3-dev: OK
+      cmake: OK
+      clang: OK
+      python3-dev: OK
+      libboost-dev: OK
+      libboost-filesystem-dev: OK
+      libboost-thread-dev: OK
+      libboost-program-options-dev: OK
+      libboost-iostreams-dev: OK
+      libboost-dev: OK
+      libeigen3-dev: OK
+      build-essential: OK
+      clang: OK
+      bison: MISSING
+      flex: MISSING
+      libreadline-dev: OK
+      gawk: OK
+      tcl-dev: OK
+      libffi-dev: OK
+      git: OK
+      graphviz: OK
+      xdot: OK
+      pkg-config: OK
+      python3: OK
+      libboost-system-dev: MISSING
+      libboost-python-dev: MISSING
+      libboost-filesystem-dev: OK
+      zlib1g-dev: OK
+    ERROR: you need to install missing packages
+      try 'sudo apt install  bison flex libboost-system-dev libboost-python-dev'
+    make: *** [Makefile:77: check-deps] Error 1
+    ```
+
+   Install any missing build dependencies (assuming a Debian-based distro):
+
+    ```console
+    $ sudo apt install  bison flex libboost-system-dev libboost-python-dev
+    ```
+
+   Once you have the dev dependencies, run `make install` (this will download
+   release archives, verify SHA256 digests, then build and install to `~/bin`
+   and `~/bin/yosyshq`. It takes a while to finish):
+
+    ```console
+    $ cd ~/code/ocfpga/experiments/09_try_verilog_examples
+    $ make install
+    ```
+
+   Verify the install worked (this assumes `$HOME/bin` is in your `$PATH`):
+
+    ```console
+    $ ecppack --version
+    Project Trellis ecppack Version a33e120
+    $ nextpnr-ecp5 --version
+    "nextpnr-ecp5" -- Next Generation Place and Route (Version a33e120)
+    $ yosys --version
+    Yosys 0.40 (git sha1 a1bb0255d65, g++ 12.2.0-14 -fPIC -Os)
+    ```
+
+
+2. ...
 
 
 ## Lab Notes
@@ -293,3 +384,8 @@
     $ yosys --version
     Yosys 0.40 (git sha1 a1bb0255d65, g++ 12.2.0-14 -fPIC -Os)
     ```
+
+7. To test, I uninstalled everything from `~/bin`, did a `make dist-clean`, and
+   rebuilt from scratch with `make install`. It worked fine. Build and install
+   took 39 minutes to finish using a 1.4 GHz Core i5-4260U with 4 GB RAM, SATA
+   SSD, and Debian Bookworm.
