@@ -172,11 +172,11 @@
    | remove VTT resistors  (hw)         | -50 mA | -250 mW |
    | turn off ODT                       | -50 mA | -250 mW |
    | "disable the virtual VCC/GND" (hw) | -60 mA | -300 mW |
-   | ---------------------------------- | ------ | ------- |
+   |                                    |        |         |
    | subtotal                           | 140 mA |  700 mW |
-   | ---------------------------------- | ------ | ------- |
+   |                                    |        |         |
    | DIFFRESISTOR=OFF, TERMINATION=OFF  | -68 mA | -340 mW |
-   | ---------------------------------- | ------ | ------- |
+   |                                    |        |         |
    | total (r0.2.1 + tuned gateware?)   |  72 mA |  360 mW |
 
    In the
