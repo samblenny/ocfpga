@@ -221,60 +221,61 @@ Contents:
    (FPGA-TN-02032) explains what the different pin mode constants mean (drive
    strength, slew rate, termination, differential or not, etc).
 
-**TODO: finish this**
+   **TODO: finish this**
 
 
 ### Verilog and pcf for low current
 
-**TODO: finish this**
+10. **TODO: finish this**
 
-   If I'm reading
-   [orangecrab-hardware issue 19](https://github.com/orangecrab-fpga/orangecrab-hardware/issues/19),
-   right, **gateware configuration can reduce OrangeCrab's current draw by
-   by about 120 mA!** Most of that has to do with termination resistors. If I
-   understand correctly, about 110 mA of current draw was probably eliminated
-   by hardware changes between r0.2 and r0.2.1. But, about another 120 mA on
-   top of that can be eliminated with gateware changes.
+    If I'm reading
+    [orangecrab-hardware issue 19](https://github.com/orangecrab-fpga/orangecrab-hardware/issues/19),
+    right, **gateware configuration can reduce OrangeCrab's current draw by
+    by about 120 mA!** Most of that has to do with termination resistors. If I
+    understand correctly, about 110 mA of current draw was probably eliminated
+    by hardware changes between r0.2 and r0.2.1. But, about another 120 mA on
+    top of that can be eliminated with gateware changes.
 
-   This is the table I made while trying to follow the mA and mW references in
-   that issue thread (the two "hw" lines appeared to be hardware changes):
+    This is the table I made while trying to follow the mA and mW references in
+    that issue thread (the two "hw" lines appeared to be hardware changes):
 
-   |                                    |        |         |
-   | ---------------------------------- | ------ | ------- |
-   | baseline: stock r0.2 board         | 300 mA | 1500 mW |
-   | remove VTT resistors  (hw)         | -50 mA | -250 mW |
-   | turn off ODT                       | -50 mA | -250 mW |
-   | "disable the virtual VCC/GND" (hw) | -60 mA | -300 mW |
-   |                                    |        |         |
-   | subtotal                           | 140 mA |  700 mW |
-   |                                    |        |         |
-   | DIFFRESISTOR=OFF, TERMINATION=OFF  | -68 mA | -340 mW |
-   |                                    |        |         |
-   | total (r0.2.1 + tuned gateware?)   |  72 mA |  360 mW |
+    |                                    |        |         |
+    | ---------------------------------- | ------ | ------- |
+    | baseline: stock r0.2 board         | 300 mA | 1500 mW |
+    | remove VTT resistors  (hw)         | -50 mA | -250 mW |
+    | turn off ODT                       | -50 mA | -250 mW |
+    | "disable the virtual VCC/GND" (hw) | -60 mA | -300 mW |
+    |                                    |        |         |
+    | subtotal                           | 140 mA |  700 mW |
+    |                                    |        |         |
+    | DIFFRESISTOR=OFF, TERMINATION=OFF  | -68 mA | -340 mW |
+    |                                    |        |         |
+    | total (r0.2.1 + tuned gateware?)   |  72 mA |  360 mW |
 
-   In the
-   [MT41K64M16TW_107:J datasheet](https://media-www.micron.com/-/media/client/global/documents/products/data-sheet/dram/ddr3/1gb_1_35v_ddr3l.pdf)
-   (the DRAM chip on OrangeCrab 85F), the chart on page 42 suggests that the
-   lowest current operating modes might be Reset (14 mA?), something called
-   "Precharge power-down current;Slow exit" (12 mA), and something called "Room
-   temperature self refresh" (8 mA). Without including a DRAM controller core
-   in my gateware (to send control commands to the DRAM chip), I'm assuming the
-   easiest way to cut DRAM current draw would be to add a constraint with a
-   weak pulldown resistor on the `RAM_RESET#` pin (Bank 6: PL44B, L18). It's
-   also possible that one of the other pins can activate the "room temperature
-   self refresh" thing. I should probably read the data sheet more carefully.
+    In the
+    [MT41K64M16TW_107:J datasheet](https://media-www.micron.com/-/media/client/global/documents/products/data-sheet/dram/ddr3/1gb_1_35v_ddr3l.pdf)
+    (the DRAM chip on OrangeCrab 85F), the chart on page 42 suggests that the
+    lowest current operating modes might be Reset (14 mA?), something called
+    "Precharge power-down current;Slow exit" (12 mA), and something called
+    "Room temperature self refresh" (8 mA). Without including a DRAM controller
+    core in my gateware (to send control commands to the DRAM chip), I'm
+    assuming the easiest way to cut DRAM current draw would be to add a
+    constraint with a weak pulldown resistor on the `RAM_RESET#` pin (Bank 6:
+    PL44B, L18). It's also possible that one of the other pins can activate the
+    "room temperature self refresh" thing. I should probably read the data
+    sheet more carefully.
 
 
 ### PicoRV32 bitstream ROM to change a pin
 
-**TODO**
+20. **TODO**
 
 
 ### PicoRV32 XIP from flash to change a pin
 
-**TODO**
+30. **TODO**
 
 
 ### PicoRV32 C code to XIP ROM to change a pin
 
-**TODO**
+40. **TODO**
