@@ -134,7 +134,9 @@ Contents:
     Time spent: 18% 38x opt_expr (1 sec), 12% 11x techmap (1 sec), ...
     ```
 
-   That seems good, I guess? Now try place and route...
+   That seems good, I guess?
+
+4. Now try place and route...
 
     ```console
     $ nextpnr-ecp5 --json picorv32.json --textcfg picorv32_out.config --85k --package CSFBGA285
@@ -180,7 +182,7 @@ Contents:
    I think that worked? If I'm reading it right, the CPU design got
    synthesized, placed, and routed.
 
-   Now try making a bitstream...
+5. Now try making a bitstream...
 
     ```console
     $ ecppack --compress --freq 38.8 --input picorv32_out.config --bit picorv32.bit
@@ -197,14 +199,34 @@ Contents:
    specify how the CPU will load code or set its program counter after reset.
    Nor did I prepare any RV32 object code.
 
-4. Thinking about `.pcf` constraint files for nextpnr...
+
+### Verilog and pcf for a pullup
+
+6. I want to make a minimalist Verilog and pcf file example to build a
+   bitstream that will put a pullup on the SDA pin. So, among other things, I
+   need to understand `.pcf` constraint files for nextpnr...
 
    The orangecrab-examples repo includes a
    [verilog/orangecrab_r0.2.1.pcf](https://github.com/orangecrab-fpga/orangecrab-examples/blob/main/verilog/orangecrab_r0.2.1.pcf)
    `.pcf` file which sets up a bunch of constraints for nextpnr. Most of that
    file has to do with setting up differential IO pairs for the DRAM chip,
-   which I totally don't care about. If possible, I would like to figure out
-   how to hold the thing in reset, or otherwise reduce its current consumption.
+   which I totally don't care about.
+
+   In the YosysHQ/nextpnr repository,
+   [docs/constraints.md](https://github.com/YosysHQ/nextpnr/blob/master/docs/constraints.md)
+   explains a bit about how constraints work. On Lattice's ECP5 page, in the
+   [Documentation](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD)
+   section,
+   [ECP5 and ECP5-5G sysIO Usage Guide](https://www.latticesemi.com/view_document?document_id=50464)
+   (FPGA-TN-02032) explains what the different pin mode constants mean (drive
+   strength, slew rate, termination, differential or not, etc).
+
+**TODO: finish this**
+
+
+### Verilog and pcf for low current
+
+**TODO: finish this**
 
    If I'm reading
    [orangecrab-hardware issue 19](https://github.com/orangecrab-fpga/orangecrab-hardware/issues/19),
@@ -241,29 +263,6 @@ Contents:
    weak pulldown resistor on the `RAM_RESET#` pin (Bank 6: PL44B, L18). It's
    also possible that one of the other pins can activate the "room temperature
    self refresh" thing. I should probably read the data sheet more carefully.
-
-   For understanding how to write `.pcf` files...
-
-   In the YosysHQ/nextpnr repository,
-   [docs/constraints.md](https://github.com/YosysHQ/nextpnr/blob/master/docs/constraints.md)
-   explains a bit about how constraints work. On Lattice's ECP5 page, in the
-   [Documentation](https://www.latticesemi.com/Products/FPGAandCPLD/ECP5#_11D625E1D2C7406C96A5312C93FF0CBD)
-   section,
-   [ECP5 and ECP5-5G sysIO Usage Guide](https://www.latticesemi.com/view_document?document_id=50464)
-   (FPGA-TN-02032) explains what the different pin mode constants mean (drive
-   strength, slew rate, termination, differential or not, etc).
-
-
-### Verilog and pcf for a pullup
-
-5. ...
-
-**TODO: write a pcf file, figure out how to wire PicoRV32 data bus to GPIO pin**
-
-
-### Verilog and pcf for low current
-
-**TODO**
 
 
 ### PicoRV32 bitstream ROM to change a pin
