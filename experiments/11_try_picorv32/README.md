@@ -240,7 +240,7 @@ Contents:
    In both the 25F and 85F pinout CSV files, the "Bank", and "CSFBGA285"
    columns match up with the orangecrab-fpga/orangecrab-hardware
    [r0.2.1 schematic pdf](https://github.com/orangecrab-fpga/orangecrab-hardware/blob/main/hardware/orangecrab_r0.2.1/Production/OrangeCrab_r0.2.1_sch.pdf)
-   labels on the "/FPGA/" sheet. Also, the "Dual Function" columns are
+   labels on the "/FPGA/" sheet. Also, the "Dual Function" columns are mostly
    identical. But, only the "Pin/Ball Function" column of the 25F pinout CSV
    matches the labels in the schematic.
 
