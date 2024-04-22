@@ -9,11 +9,11 @@
    [PicoRV32](https://github.com/YosysHQ/picorv32) CPU from Verilog into an
    ECP5 bitstream with YosysHQ tools.
 
-2. **Verilog and pcf for a pullup**: Write Verilog and .pcf files for a
+2. **Verilog and lpf for a pullup**: Write Verilog and .lpf files for a
    bitstream to produce observable output on an IO pin. Putting a pullup on the
    SDA pin would be great as I already have it wired to my logic analyzer.
 
-3. **Verilog and pcf for low power**: Write Verilog and .pcf files for for a
+3. **Verilog and lpf for low power**: Write Verilog and .lpf files for for a
    bitstream that gives a baseline low current configuration (DRAM in reset or
    room temperature refresh, no floating IO pins, low ECP5 clock speed). Try to
    measure difference against factory firmware with a thermal camera (temp
@@ -64,9 +64,9 @@ Contents:
 
 - [Build a PicoRV32 bitstream](#Build-a-PicoRV32-bitstream)
 
-- [Verilog and pcf for a pullup](#Verilog-and-pcf-for-a-pullup) (big pinout table)
+- [Verilog and lpf for a pullup](#Verilog-and-lpf-for-a-pullup) (big pinout table)
 
-- [Verilog and pcf for low power](#Verilog-and-pcf-for-low-current)
+- [Verilog and lpf for low power](#Verilog-and-lpf-for-low-current)
 
 - [PicoRV32 bitstream ROM to change a pin](#PicoRV32-bitstream-ROM-to-change-a-pin)
 
@@ -194,23 +194,29 @@ Contents:
    here. Why no errors?
 
    Anyhow, even if I were to try loading the bitstream, this configuration is
-   probably useless because I didn't provide Verilog or a `.pcf` file
+   probably useless because I didn't provide Verilog or a `.lpf` file
    specifying how to wire up the ECP5 IO pins. I also didn't do anything to
    specify how the CPU will load code or set its program counter after reset.
    Nor did I prepare any RV32 object code.
 
 
-### Verilog and pcf for a pullup
+### Verilog and lpf for a pullup
 
-6. I want to make a minimalist Verilog and pcf file example to build a
+6. I want to make a minimalist Verilog and lpf file example to build a
    bitstream that will put a pullup on the SDA pin. So, among other things, I
-   need to understand `.pcf` constraint files for nextpnr...
+   need to understand `.lpf` constraint files for nextpnr...
 
    The orangecrab-examples repo includes a
    [verilog/orangecrab_r0.2.1.pcf](https://github.com/orangecrab-fpga/orangecrab-examples/blob/main/verilog/orangecrab_r0.2.1.pcf)
    `.pcf` file which sets up a bunch of constraints for nextpnr. Most of that
    file has to do with setting up differential IO pairs for the DRAM chip,
    which I totally don't care about.
+
+   *Somewhat mysteriously, the orangecrab-examples ECP5 pin constraints are in
+   a pcf file, which is the file format for Lattice iCE40 pin constraints. But,
+   the syntax in the file is actually ECP5-style lpf. I initially didn't catch
+   that distinction and was thinking that ECP5 also used pcf. Now, I've learned
+   ECP5 uses lpf files for pin constraints.*
 
    In the YosysHQ/nextpnr repository,
    [docs/constraints.md](https://github.com/YosysHQ/nextpnr/blob/master/docs/constraints.md)
@@ -221,7 +227,7 @@ Contents:
    (FPGA-TN-02032) explains what the different pin mode constants mean (drive
    strength, slew rate, termination, differential or not, etc).
 
-7. Trying to understand how pcf files map between Verilog wire names and
+7. Trying to understand how lpf files map between Verilog wire names and
    whatever sort of names are built into `nextpnr-ecp5`'s model of the ECP5 85F
    CSFBGA285 package...
 
@@ -261,8 +267,8 @@ Contents:
    What I take from that is, configuring IO pins for anything other than high
    impedance needs to be approached with caution.
 
-   The orangecrab-examples/verilog/orangecrab_r0.2.1.pcf file includes lines
-   like,
+   The orangecrab-examples/verilog/orangecrab_r0.2.1.pcf file (*yes, it's a .pcf
+   file, but the syntax is actually that of an lpf file*) includes lines like,
 
    ```
    LOCATE COMP "clk48" SITE "A9";
@@ -415,12 +421,12 @@ Contents:
    | 40 | V14 | JTAG_TDO | TDO |  | TDO |
 
 
-8. Writing pcf and Verilog files to put a pullup on `IO_SDA`...
+8. Writing lpf and Verilog files to put a pullup on `IO_SDA`...
 
    **TODO: finish this**
 
 
-### Verilog and pcf for low current
+### Verilog and lpf for low current
 
 10. **TODO: finish this**
 
