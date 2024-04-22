@@ -272,7 +272,7 @@ Contents:
    name column. In that case, according to the schematic, `A9` is wired to the
    `OUT` pin of `OSC1`, which is a Kyocera KC2520B48.0000C10E00 50ppm, 48 MHz
    clock oscillator. So, I see that it makes sense to call it `clk48`. Also,
-   from the table, `A9` has the "dual function" of `PCLKT1_0`
+   from the table, `A9` has the "dual function" of `PCLKT1_0`.
 
    According to Lattice's
    [ECP5 and ECP5-5G sysCLOCK PLL/DLL Design and Usage Guide](https://www.latticesemi.com/view_document?document_id=50465)
@@ -330,7 +330,7 @@ Contents:
    | 3 | H4 | IO_A3 (Feather) | PR26A | PCLKT3_1 | PR47A |
    | 3 | J1 | SD0_DAT0 (microSD; 3.3V pullup) | PR35B | VREF1_3 | PR56B |
    | 3 | J2 | IO_13 (Feather) | PR35A |  | PR56A |
-   | 3 | J3 | LED_B (**LED***) | PR29C | GR_PCLK3_1 | PR50C |
+   | 3 | J3 | LED_B (**LED**) | PR29C | GR_PCLK3_1 | PR50C |
    | 3 | K1 | SD0_CLK (microSD) | PR41D |  | PR86D |
    | 3 | K2 | SD0_CMD (microSD; 3.3V pullup) | PR44A |  | PR89A |
    | 3 | K3 | SD0_DAT1 (microSD; 3.3V pullup) | PR41C |  | PR86C |
