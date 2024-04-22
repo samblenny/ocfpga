@@ -193,6 +193,7 @@ Contents:
    This is the table I made while trying to follow the mA and mW references in
    that issue thread (the two "hw" lines appeared to be hardware changes):
 
+   |                                    |        |         |
    | ---------------------------------- | ------ | ------- |
    | baseline: stock r0.2 board         | 300 mA | 1500 mW |
    | remove VTT resistors  (hw)         | -50 mA | -250 mW |
