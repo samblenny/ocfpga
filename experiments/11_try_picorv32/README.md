@@ -297,7 +297,7 @@ Contents:
    | 0 | C10 | IO_SDA (**Feather**) | PT29B | PCLKC0_0 | PT65B |
    | 0 | C11 | NC | PT4B |  | PT4B |
    | 1 | A8 | IO_11 (Feather) | PT35B | PCLKC1_0 | PT71B |
-   | 1 | A9 | REF_CLK (wired to OSC1 OUT) | PT35A | PCLKT1_0 | PT71A |
+   | 1 | A9 | REF_CLK (wired to **OSC1 OUT**) | PT35A | PCLKT1_0 | PT71A |
    | 1 | B8 | IO_10 (Feather) | PT67A |  | PT121A |
    | 1 | B9 | IO_6 (Feather) | PT33A | PCLKT1_1 | PT69A |
    | 1 | C8 | IO_9 (Feather) | PT67B |  | PT121B |
