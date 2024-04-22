@@ -182,9 +182,11 @@ In general, files in this repository mostly fit into four categories:
 2. My "**MIT**" stuff: source code, documentation, build files, and prebuilt
    binaries for software, such as firmware to run on an RV32 CPU
 
-3. My "**CERN-OHL-P-2.0**" stuff: source code, documentation, build files, and
-   prebuilt binaries for hardware design specifications, such as gateware
-   to configure an FPGA
+3. My "**CERN-OHL-P-2.0**", "**ISC**", or "**Apache-2.0**" stuff: source code,
+   documentation, build files, and prebuilt binaries for hardware design
+   specifications, such as pin constraint files and Verilog peripherals. For
+   things that I write to extend a soft CPU that somebody else wrote, I try to
+   match the original license.
 
 4. Other people's openly-licensed stuff: files copyrighted by people who are
    not me (e.g. prebuilt binaries that I built using MIT-licensed source code
