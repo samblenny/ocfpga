@@ -31,7 +31,31 @@
 
 *work in progress*
 
-1. ...
+1. My initial attempt at building a PicoRV32 pretty much just worked, producing
+   a bitstream file that looks like I could flash it to my OrangeCrab 85F. I
+   didn't try to run this because it's very unlikely that the IO pins are
+   configured reasonably.
+
+   This stuff ran without any errors...
+
+    ```console
+    $ cd ~/code
+    $ git clone https://github.com/YosysHQ/picorv32.git
+    $ cd picorv32
+    $ yosys -p "read_verilog picorv32.v; synth_ecp5 -json picorv32.json"
+    $ nextpnr-ecp5 --json picorv32.json --textcfg picorv32_out.config --85k --package CSFBGA285
+    $ ecppack --compress --freq 38.8 --input picorv32_out.config --bit picorv32.bit
+    $ du -sh picorv32.bit
+    312K	picorv32.bit
+    ```
+
+2. ...
+
+3. ...
+
+4. ...
+
+5. ...
 
 
 ## Lab Notes
