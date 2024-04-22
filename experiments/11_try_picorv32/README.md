@@ -292,16 +292,16 @@ Contents:
    | ---- | --------- | -------------------- | -------- | --------- | -------- |
    | 0 | A10 | NC | PT27B | PCLKC0_1 | PT63B |
    | 0 | A11 | NC | PT27A | PCLKT0_1 | PT63A |
-   | 0 | B10 | IO_5 (Feather) | PT29A | PCLKT0_0 | PT65A |
+   | 0 | **B10** | IO_5 (Feather) | PT29A | PCLKT0_0 | PT65A |
    | 0 | B11 | NC | PT4A |  | PT4A |
-   | 0 | C10 | IO_SDA (**Feather**) | PT29B | PCLKC0_0 | PT65B |
+   | 0 | **C10** | IO_SDA (**Feather**) | PT29B | PCLKC0_0 | PT65B |
    | 0 | C11 | NC | PT4B |  | PT4B |
    | 1 | A8 | IO_11 (Feather) | PT35B | PCLKC1_0 | PT71B |
-   | 1 | A9 | REF_CLK (wired to **OSC1 OUT**) | PT35A | PCLKT1_0 | PT71A |
+   | 1 | **A9** | REF_CLK (wired to **OSC1 OUT**) | PT35A | PCLKT1_0 | PT71A |
    | 1 | B8 | IO_10 (Feather) | PT67A |  | PT121A |
    | 1 | B9 | IO_6 (Feather) | PT33A | PCLKT1_1 | PT69A |
    | 1 | C8 | IO_9 (Feather) | PT67B |  | PT121B |
-   | 1 | C9 | IO_SCL (**Feather**) | PT33B | PCLKC1_1 | PT69B |
+   | 1 | **C9** | IO_SCL (**Feather**) | PT33B | PCLKC1_1 | PT69B |
    | 2 | A2 | RAM_A14 | PR20C | GR_PCLK2_0 | PR41C |
    | 2 | A3 | RAM_A3 | PR20A | GR_PCLK2_1 | PR41A |
    | 2 | A4 | RAM_A4 | PR11B |  | PR20B |
@@ -336,19 +336,19 @@ Contents:
    | 3 | H4 | IO_A3 (Feather) | PR26A | PCLKT3_1 | PR47A |
    | 3 | J1 | SD0_DAT0 (microSD; 3.3V pullup) | PR35B | VREF1_3 | PR56B |
    | 3 | J2 | IO_13 (Feather) | PR35A |  | PR56A |
-   | 3 | J3 | LED_B (**LED**) | PR29C | GR_PCLK3_1 | PR50C |
+   | 3 | **J3** | LED_B (**LED**) | PR29C | GR_PCLK3_1 | PR50C |
    | 3 | K1 | SD0_CLK (microSD) | PR41D |  | PR86D |
    | 3 | K2 | SD0_CMD (microSD; 3.3V pullup) | PR44A |  | PR89A |
    | 3 | K3 | SD0_DAT1 (microSD; 3.3V pullup) | PR41C |  | PR86C |
-   | 3 | K4 | LED_R (**LED**) | PR38A |  | PR83A |
+   | 3 | **K4** | LED_R (**LED**) | PR38A |  | PR83A |
    | 3 | L1 | SD0_CD (microSD; 3.3V pullup) | PR44B |  | PR89B |
    | 3 | L3 | SD0_DAT2 (microSD; 3.3V pullup) | PR41B |  | PR86B |
    | 3 | L4 | IO_A0 (Feather) | PR38B |  | PR83B |
    | 3 | M1 | SD0_DAT3 (microSD; pullup???) | PR47C | LRC_GPLL0T_IN | PR92C |
-   | 3 | M2 | USB_D- (**USB**) | PR44C |  | PR89C |
-   | 3 | M3 | LED_G (**LED**) | PR41A |  | PR86A |
-   | 3 | N1 | USB_D+ (**USB**) | PR47D | LRC_GPLL0C_IN | PR92D |
-   | 3 | N2 | USB_PULLUP (**USB**) | PR44D |  | PR89D |
+   | 3 | **M2** | USB_D- (**USB**) | PR44C |  | PR89C |
+   | 3 | **M3** | LED_G (**LED**) | PR41A |  | PR86A |
+   | 3 | **N1** | USB_D+ (**USB**) | PR47D | LRC_GPLL0C_IN | PR92D |
+   | 3 | **N2** | USB_PULLUP (**USB**) | PR44D |  | PR89D |
    | 3 | N3 | IO_A1 (Feather) | PR38D |  | PR83D |
    | 3 | N4 | IO_A2 (Feather) | PR38C |  | PR83C |
    | 6 | C18 | RAM_D13 | PL26B | PCLKC6_1 | PL47B |
@@ -366,7 +366,7 @@ Contents:
    | 6 | H17 | RAM_LDQS- | PL32B |  | PL53B |
    | 6 | H18 | NC | PL38D |  | PL83D |
    | 6 | J16 | RAM_D12 | PL35D |  | PL56D |
-   | 6 | J17 | USER_BUTTON (1.35V pullup) | PL38C |  | PL83C |
+   | 6 | **J17** | USER_BUTTON (1.35V pullup) | PL38C |  | PL83C |
    | 6 | J18 | RAM_CK+ | PL41A |  | PL86A |
    | 6 | K15 | wired to P1.35V | PL41D |  | PL86D |
    | 6 | K16 | wired to P1.35V | PL41C |  | PL86C |
@@ -374,7 +374,7 @@ Contents:
    | 6 | K18 | RAM_CK- | PL41B |  | PL86B |
    | 6 | L15 | wired to GND | PL44C |  | PL89C |
    | 6 | L16 | wired to GND | PL44D |  | PL89D |
-   | 6 | L18 | RAM_RESET# (**DRAM Power**) | PL44B |  | PL89B |
+   | 6 | **L18** | RAM_RESET# (**DRAM Power**) | PL44B |  | PL89B |
    | 6 | M16 | EXT_PLL+ | PL47C | LLC_GPLL0T_IN | PL92C |
    | 6 | M17 | EXT_PLL- | PL47D | LLC_GPLL0C_IN | PL92D |
    | 7 | A12 | RAM_CS# | PL5A |  | PL14A |
@@ -388,17 +388,17 @@ Contents:
    | 7 | B17 | RAM_D2 | PL23B | PCLKC7_1 | PL44B |
    | 7 | B18 | wired to P1.35V | PL23C | PCLKT7_0 | PL44C |
    | 7 | C12 | RAM_RAS# | PL2A |  | PL11A |
-   | 7 | C13 | RAM_ODT (**DRAM Power**) | PL8B |  | PL17B |
+   | 7 | **C13** | RAM_ODT (**DRAM Power**) | PL8B |  | PL17B |
    | 7 | C15 | wired to ECP5_VREF | PL14C | VREF1_7 | PL35C |
    | 7 | C16 | RAM_D3 | PL20C | GR_PCLK7_0 | PL41C |
    | 7 | C17 | RAM_D0 | PL23D | PCLKC7_0 | PL44D |
    | 7 | D13 | RAM_CAS# | PL8A |  | PL17A |
    | 7 | D15 | RAM_D1 | PL17A |  | PL38A |
    | 7 | D16 | RAM_UDM | PL17B |  | PL38B |
-   | 8 | M18 | IO_1 (**Feather TX**) | PB6B | D4/MOSI2/IO4 | PB6B |
+   | 8 | **M18** | IO_1 (**Feather TX**) | PB6B | D4/MOSI2/IO4 | PB6B |
    | 8 | N15 | IO_MISO (Feather) | PB4A | D7/IO7 | PB4A |
    | 8 | N16 | IO_MOSI (Feather) | PB4B | D6/IO6 | PB4B |
-   | 8 | N17 | IO_0 (**Feather RX**) | PB6A | D5/MISO2/IO5 | PB6A |
+   | 8 | **N17** | IO_0 (**Feather RX**) | PB6A | D5/MISO2/IO5 | PB6A |
    | 8 | N18 | QSPI_D3 | PB9A | D3/IO3 | PB9A |
    | 8 | R16 | NC | PB18A | WRITEN | PB18A |
    | 8 | R17 | IO_SCK (Feather) | PB13A | SN/CSN | PB13A |
