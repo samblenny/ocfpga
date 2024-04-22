@@ -5,14 +5,26 @@
 
 ## Goals:
 
-1. Translate a [PicoRV32](https://github.com/YosysHQ/picorv32) CPU from
-   Verilog into an ECP5 bitstream with YosysHQ tools.
+1. **Build a PicoRV32 bitstream**: Translate a
+   [PicoRV32](https://github.com/YosysHQ/picorv32) CPU from Verilog into an
+   ECP5 bitstream with YosysHQ tools.
 
-2. Write Verilog to wire the CPU up to an observable output: blink the LED,
-   flip a GPIO pin, export a register to JTAG, or anything I can get working.
+2. **Verilog and pcf for a pullup**: Write Verilog and .pcf files for a
+   bitstream to produce observable output on an IO pin. Putting a pullup on the
+   SDA pin would be great as I already have it wired to my logic analyzer.
 
-3. Write a C program, compile it, and run it on the PicoRV32. Anything I can
-   get working to produce observable output would be fine.
+3. **Verilog and pcf for low power**: Write Verilog and .pcf files for for a
+   bitstream that gives a baseline low current configuration (DRAM in reset or
+   room temperature refresh, no floating IO pins, low ECP5 clock speed). Try to
+   measure difference against factory firmware with a thermal camera (temp
+   above ambient) or USB power meter (mA).
+
+4. **PicoRV32 bitstream ROM to change a pin**: Wire the CPU up to the LED or an
+   IO pin and write code to modulate the output. Probably this will use object
+   code baked into the bitstream as a ROM.
+
+5. **PicoRV32 XIP from flash to change a pin**: Modify the previous experiment
+   to use eXecute In Place (XIP) to run compiled C code from SPI flash.
 
 
 ## Results
@@ -23,6 +35,21 @@
 
 
 ## Lab Notes
+
+Contents:
+
+- [Build a PicoRV32 bitstream](#Build-a-PicoRV32-bitstream)
+
+- [Verilog and pcf for a pullup](#Verilog-and-pcf-for-a-pullup)
+
+- [Verilog and pcf for low power](#Verilog-and-pcf-for-low-current)
+
+- [PicoRV32 bitstream ROM to change a pin](#PicoRV32-bitstream-ROM-to-change-a-pin)
+
+- [PicoRV32 XIP from flash to change a pin](#PicoRV32-XIP-from-flash-to-change-a-pin)
+
+
+### Build a PicoRV32 bitstream
 
 1. Clone repo and check out
    [commit 336cfca](https://github.com/YosysHQ/picorv32/tree/336cfca6e5f1c08788348aadc46b3581b9a5d585)
@@ -166,7 +193,6 @@
    This is the table I made while trying to follow the mA and mW references in
    that issue thread (the two "hw" lines appeared to be hardware changes):
 
-   |                                    |        |         |
    | ---------------------------------- | ------ | ------- |
    | baseline: stock r0.2 board         | 300 mA | 1500 mW |
    | remove VTT resistors  (hw)         | -50 mA | -250 mW |
@@ -202,6 +228,29 @@
    (FPGA-TN-02032) explains what the different pin mode constants mean (drive
    strength, slew rate, termination, differential or not, etc).
 
+
+### Verilog and pcf for a pullup
+
 5. ...
 
 **TODO: write a pcf file, figure out how to wire PicoRV32 data bus to GPIO pin**
+
+
+### Verilog and pcf for low current
+
+**TODO**
+
+
+### PicoRV32 bitstream ROM to change a pin
+
+**TODO**
+
+
+### PicoRV32 XIP from flash to change a pin
+
+**TODO**
+
+
+### PicoRV32 C code to XIP ROM to change a pin
+
+**TODO**
