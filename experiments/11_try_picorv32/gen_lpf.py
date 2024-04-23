@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: ISC
 # SPDX-FileCopyrightText: Copyright 2024 Sam Blenny
-import csv
-import re
 """
 Parse CSV file of OrangeCrab 85F pins to generate an lpf pin constraint file
 
@@ -34,6 +32,8 @@ differential).
 Later on, I will look at putting the DRAM chip in low power mode and turning
 off the ECP5's differential driver circuitry.
 """ 
+import csv
+import re
 
 
 class Pin:
@@ -100,10 +100,6 @@ class Pin:
         if re.match(r'user_button', sig):  # Button has 1.35V ext pullup
             self.iobuf = Pin.HIGHZ_135
         elif re.match(r'ram_', sig):       # DRAM 1.35V !
-            self.iobuf = Pin.HIGHZ_135
-        elif re.match(r'p135v', sig):      # DRAM 1.35V !
-            self.iobuf = Pin.HIGHZ_135
-        elif re.match(r'ecp5_vref', sig):  # DRAM 1.35V !
             self.iobuf = Pin.HIGHZ_135
         elif re.match(r'ext_pll', sig):    # EXT_PLL* pins are in DRAM bank
             self.iobuf = Pin.HIGHZ_135
