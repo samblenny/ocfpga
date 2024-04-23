@@ -309,7 +309,7 @@ Contents:
    | 2 | A7 | RAM_A10 | PR8B |  | PR17B |
    | 2 | B1 | RAM_A8 | PR23B | PCLKC2_1 | PR44B |
    | 2 | B2 | RAM_A7 | PR20B |  | PR41B |
-   | 2 | B4 | wired to ECP5_VREF | PR14C | VREF1_2 | PR35C |
+   | 2 | **B4** | wired to ECP5_VREF | PR14C | **VREF1_2** | PR35C |
    | 2 | B6 | RAM_A12 | PR8A |  | PR17A |
    | 2 | B7 | RAM_BA1 | PR2B |  | PR11B |
    | 2 | C1 | RAM_A13 | PR23C | PCLKT2_0 | PR44C |
@@ -361,7 +361,7 @@ Contents:
    | 6 | G15 | RAM_D10 | PL35A |  | PL56A |
    | 6 | G16 | RAM_LDM | PL29D |  | PL50D |
    | 6 | G18 | RAM_LDQS+ | PL32A |  | PL53A |
-   | 6 | H15 | wired to ECP5_VREF | PL35B | VREF1_6 | PL56B |
+   | 6 | **H15** | wired to ECP5_VREF | PL35B | **VREF1_6** | PL56B |
    | 6 | H16 | RAM_D14 | PL35C |  | PL56C |
    | 6 | H17 | RAM_LDQS- | PL32B |  | PL53B |
    | 6 | H18 | NC | PL38D |  | PL83D |
@@ -389,7 +389,7 @@ Contents:
    | 7 | B18 | wired to P1.35V | PL23C | PCLKT7_0 | PL44C |
    | 7 | C12 | RAM_RAS# | PL2A |  | PL11A |
    | 7 | **C13** | RAM_ODT (**DRAM Power**) | PL8B |  | PL17B |
-   | 7 | C15 | wired to ECP5_VREF | PL14C | VREF1_7 | PL35C |
+   | 7 | **C15** | wired to ECP5_VREF | PL14C | **VREF1_7** | PL35C |
    | 7 | C16 | RAM_D3 | PL20C | GR_PCLK7_0 | PL41C |
    | 7 | C17 | RAM_D0 | PL23D | PCLKC7_0 | PL44D |
    | 7 | D13 | RAM_CAS# | PL8A |  | PL17A |
