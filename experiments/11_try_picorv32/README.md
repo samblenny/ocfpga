@@ -49,7 +49,17 @@
     312K	picorv32.bit
     ```
 
-2. ...
+2. I made a big table of ECP5 IO banks, pin/ball names, schematic signal names,
+   and pin functions to help me make sense of how pin constraints should be
+   assigned. The CSV version of my table is in
+   [oc-ecp5u-25f-85f-pinout.csv](oc-ecp5u-25f-85f-pinout.csv).
+
+   I wrote a script, [gen_lpf.py](gen_lpf.py) to generate an lpf pin constraint
+   file from the CSV file. The script includes rules to decide on 1.35V logic
+   (DRAM IO banks) or 3.3V logic (the other IO banks). **The DRAM chip is a
+   1.35V low voltage device, so setting the IO modes carefully is important.**
+
+   The lpf pin constraint file is [pullup.lpf](pullup.lpf).
 
 3. ...
 
@@ -422,6 +432,13 @@ Contents:
 
 
 8. Writing lpf and Verilog files to put a pullup on `IO_SDA`...
+
+   I wrote a script, [gen_lpf.py](gen_lpf.py) to generate an lpf pin constraint
+   file that puts the pins on the DRAM banks (2, 6, and 7) in 1.35V mode and
+   puts the other pins in 3.3V modes (mostly pulldowns for Feather IO pins, a
+   pullup on SDA, and pullmode=none for the other stuff).
+
+   The lpf file is [pullup.lpf](pullup.lpf).
 
    **TODO: finish this**
 
