@@ -183,12 +183,12 @@ if __name__ == "__main__":
     # Get graph of lpf string from gen_lpf.py
     graph_mine = LpfGraph(str(PinConfig()), 'config from gen_lpf.py')
 
-    # Get graph of lpf string from orangecrab_r0.2.1.pcf
     filename = "../../../orangecrab-examples/verilog/orangecrab_r0.2.1.pcf"
     with open(filename) as f:
+        # Get graph of lpf string from orangecrab_r0.2.1.pcf
         graph_oc = LpfGraph(f.read(), 'config from orangecrab_r0.2.1.pcf')
 
-        # Make them agree on field widths for site and comp
+        # Make graphs agree on field widths for site and comp
         graph_mine.merge_field_widths(graph_oc)
 
         # Print a comparison report
