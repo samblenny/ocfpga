@@ -61,7 +61,35 @@
 
    The lpf pin constraint file is [pullup.lpf](pullup.lpf).
 
-3. ...
+3.  For baseline current and heat dissipation measurements...
+
+    Using a relatively inexpensive USB power meter whose calibration I'm not
+    sure how much to trust (perhaps accurate to +/- 10 mA?), I measured the
+    following:
+
+    | bitstream/firmware          | V    | mA              |
+    | --------------------------- | ---- | --------------- |
+    | bootloader                  | 5.10 | 51 (avg, noisy) |
+    | verilog pwm_rainbow example | 5.10 | 43 (stable-ish) |
+
+    On the thermal camera, these measurements were pretty typical:
+
+    | bitstream/firmware          | ECP5 °F | DRAM °F | Ambient °F |
+    | --------------------------- | ------- | ------- | ---------- |
+    | bootloader                  | 88.2    | 83.9    | 77.6       |
+    | verilog pwm_rainbow example | 85.2    | 81.2    | 77.1       |
+
+    The OrangeCrab r0.2.1 board seems to spread heat very well. Aside from the
+    ECP5 and the voltage regulators, the rest of the board had an approximately
+    uniform temperature. It seemed like most the heat was coming from the ECP5.
+
+    The pwm_rainbow bitstream (from orangecrab-examples/verilog) ran at about
+    8 mA less, on average, compared to the bootloader in DFU mode.
+
+    Over all, this is better than I expected from reading orangecrab-hardware
+    issue 19 (50-ish mA rather than 70-ish mA). But, still, idling at 50 mA is
+    kind of a lot.
+
 
 4. ...
 
@@ -483,6 +511,33 @@ Contents:
     PL44B, L18). It's also possible that one of the other pins can activate the
     "room temperature self refresh" thing. I should probably read the data
     sheet more carefully.
+
+    Using a relatively inexpensive USB power meter whose calibration I'm not
+    sure how much to trust (perhaps accurate to +/- 10 mA?), I measured the
+    following:
+
+    | bitstream/firmware          | V    | mA              |
+    | --------------------------- | ---- | --------------- |
+    | bootloader                  | 5.10 | 51 (avg, noisy) |
+    | verilog pwm_rainbow example | 5.10 | 43 (stable-ish) |
+
+    On the thermal camera, these measurements were pretty typical:
+
+    | bitstream/firmware          | ECP5 °F | DRAM °F | Ambient °F |
+    | --------------------------- | ------- | ------- | ---------- |
+    | bootloader                  | 88.2    | 83.9    | 77.6       |
+    | verilog pwm_rainbow example | 85.2    | 81.2    | 77.1       |
+
+    The OrangeCrab r0.2.1 board seems to spread heat very well. Aside from the
+    ECP5 and the voltage regulators, the rest of the board had an approximately
+    uniform temperature. It seemed like most the heat was coming from the ECP5.
+
+    The pwm_rainbow bitstream (from orangecrab-examples/verilog) ran at about
+    8 mA less, on average, compared to the bootloader in DFU mode.
+
+    Over all, this is better than I expected from reading orangecrab-hardware
+    issue 19 (50-ish mA rather than 70-ish mA). But, still, idling at 50 mA is
+    kind of a lot.
 
 
 ### PicoRV32 bitstream ROM to change a pin
