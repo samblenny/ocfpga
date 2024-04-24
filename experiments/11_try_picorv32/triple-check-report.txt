@@ -1,0 +1,304 @@
+Comparing config from gen_lpf.py with config from orangecrab_r0.2.1.pcf...
+
+=================================================
+=== Both configs have same IO_TYPE value for: ===
+=================================================
+
+  B10 :               io_5 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+  B10 :             gpio_5 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   A8 :              io_11 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   A8 :            gpio_11 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   A9 :            ref_clk : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   A9 :              clk48 : IO_TYPE=LVCMOS33
+
+   B8 :              io_10 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   B8 :            gpio_10 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   B9 :               io_6 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   B9 :             gpio_6 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   C8 :               io_9 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   C8 :             gpio_9 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   A2 :            ram_a14 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   A2 :        ddram_a[14] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   A3 :             ram_a3 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   A3 :         ddram_a[3] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   A4 :             ram_a4 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   A4 :         ddram_a[4] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   A6 :            ram_ba2 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   A6 :        ddram_ba[2] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   A7 :            ram_a10 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   A7 :        ddram_a[10] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   B1 :             ram_a8 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   B1 :         ddram_a[8] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   B2 :             ram_a7 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   B2 :         ddram_a[7] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   B6 :            ram_a12 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   B6 :        ddram_a[12] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   B7 :            ram_ba1 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   B7 :        ddram_ba[1] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   C1 :            ram_a13 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C1 :        ddram_a[13] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   C2 :            ram_a11 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C2 :        ddram_a[11] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   C3 :             ram_a6 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C3 :         ddram_a[6] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   C4 :             ram_a0 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C4 :         ddram_a[0] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   C7 :            ram_a15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C7 :        ddram_a[15] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   D1 :             ram_a9 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   D1 :         ddram_a[9] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   D2 :             ram_a1 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   D2 :         ddram_a[1] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   D3 :             ram_a2 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   D3 :         ddram_a[2] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   D4 :             ram_a5 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   D4 :         ddram_a[5] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   D6 :            ram_ba0 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   D6 :        ddram_ba[0] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+   H2 :              io_12 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   H2 :            gpio_12 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   H4 :              io_a3 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   H4 :            gpio_a3 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   J2 :              io_13 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   J2 :            gpio_13 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   J3 :              led_b : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   J3 :         rgb_led0_b : IO_TYPE=LVCMOS33
+
+   K4 :              led_r : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   K4 :         rgb_led0_r : IO_TYPE=LVCMOS33
+
+   L4 :              io_a0 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   L4 :            gpio_a0 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   M2 :          usb_d_neg : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   M2 :            usb_d_n : IO_TYPE=LVCMOS33
+
+   M3 :              led_g : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   M3 :         rgb_led0_g : IO_TYPE=LVCMOS33
+
+   N1 :          usb_d_pos : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   N1 :            usb_d_p : IO_TYPE=LVCMOS33
+
+   N2 :         usb_pullup : IO_TYPE=LVCMOS33  PULLMODE=NONE
+   N2 :         usb_pullup : IO_TYPE=LVCMOS33
+
+   N3 :              io_a1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   N3 :            gpio_a1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+   N4 :              io_a2 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+   N4 :            gpio_a2 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+  C18 :            ram_d13 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  C18 :       ddram_dq[13] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  D18 :            ram_cke : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  D18 :          ddram_cke : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  F15 :            ram_d11 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  F15 :       ddram_dq[11] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  F16 :             ram_d9 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  F16 :        ddram_dq[9] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  F17 :             ram_d8 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  F17 :        ddram_dq[8] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  F18 :            ram_d15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  F18 :       ddram_dq[15] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  G15 :            ram_d10 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  G15 :       ddram_dq[10] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  G16 :            ram_ldm : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  G16 :        ddram_dm[1] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  H16 :            ram_d14 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  H16 :       ddram_dq[14] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  J16 :            ram_d12 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  J16 :       ddram_dq[12] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  J17 :        user_button : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  J17 :            usr_btn : IO_TYPE=SSTL135_I
+
+  L18 :      ram_reset_inv : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  L18 :      ddram_reset_n : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  A12 :         ram_cs_inv : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  A12 :         ddram_cs_n : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  A13 :             ram_d7 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  A13 :        ddram_dq[7] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  A15 :             ram_d4 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  A15 :        ddram_dq[4] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  A17 :             ram_d6 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  A17 :        ddram_dq[6] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  B12 :         ram_we_inv : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  B12 :         ddram_we_n : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  B13 :             ram_d5 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  B13 :        ddram_dq[5] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  B17 :             ram_d2 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  B17 :        ddram_dq[2] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  C12 :        ram_ras_inv : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  C12 :        ddram_ras_n : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  C13 :            ram_odt : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  C13 :          ddram_odt : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  C16 :             ram_d3 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  C16 :        ddram_dq[3] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  C17 :             ram_d0 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  C17 :        ddram_dq[0] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  D13 :        ram_cas_inv : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  D13 :        ddram_cas_n : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  D15 :             ram_d1 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  D15 :        ddram_dq[1] : IO_TYPE=SSTL135_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  D16 :            ram_udm : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  D16 :        ddram_dm[0] : IO_TYPE=SSTL135_I  SLEWRATE=FAST
+
+  M18 :               io_1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+  M18 :             gpio_1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+  N17 :               io_0 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  N17 :             gpio_0 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+
+  N18 :            qspi_d3 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  N18 :   spiflash4x_dq[3] : IO_TYPE=LVCMOS33
+
+  R18 :            qspi_d2 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  R18 :   spiflash4x_dq[2] : IO_TYPE=LVCMOS33
+
+  T18 :    spi_config_miso : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  T18 :   spiflash4x_dq[1] : IO_TYPE=LVCMOS33
+
+  U17 :      spi_config_ss : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  U17 :    spiflash4x_cs_n : IO_TYPE=LVCMOS33
+
+  U18 :    spi_config_mosi : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  U18 :   spiflash4x_dq[0] : IO_TYPE=LVCMOS33
+
+  V17 :         fpga_reset : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  V17 :              rst_n : IO_TYPE=LVCMOS33
+
+
+
+======================================
+=== IO_TYPE values **DIFFER** for: ===
+======================================
+
+   C6 :      ram_p135v__C6 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+   C6 :     ddram_vccio[5] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  D17 :     ram_p135v__D17 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  D17 :     ddram_vccio[1] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  G18 :       ram_ldqs_pos : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  G18 :     ddram_dqs_p[1] : DIFFRESISTOR=100  IO_TYPE=SSTL135D_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  J18 :         ram_ck_pos : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  J18 :        ddram_clk_p : IO_TYPE=SSTL135D_I  SLEWRATE=FAST
+
+  K15 :     ram_p135v__K15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  K15 :     ddram_vccio[2] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  K16 :     ram_p135v__K16 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  K16 :     ddram_vccio[0] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  K17 :     ram_p135v__K17 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  K17 :     ddram_vccio[3] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  L15 :       ram_gnd__L15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  L15 :       ddram_gnd[0] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  L16 :       ram_gnd__L16 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  L16 :       ddram_gnd[1] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+  B15 :       ram_udqs_pos : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  B15 :     ddram_dqs_p[0] : DIFFRESISTOR=100  IO_TYPE=SSTL135D_I  SLEWRATE=FAST  TERMINATION=OFF
+
+  B18 :     ram_p135v__B18 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+  B18 :     ddram_vccio[4] : IO_TYPE=SSTL135_II  SLEWRATE=FAST
+
+
+
+=============================================
+=== Only found in config from gen_lpf.py: ===
+=============================================
+
+C10 :             io_sda : IO_TYPE=LVCMOS33  PULLMODE=UP
+ C9 :             io_scl : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ B4 :  ram_ecp5_vref__B4 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+ F1 :          adc_ctrl1 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ F2 :           adc_mux2 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ F3 :           adc_mux1 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ F4 :           adc_mux0 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ G1 :          adc_ctrl0 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ G3 :       adc_sense_lo : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ G4 :              io_a4 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+ H1 :           adc_mux3 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ H3 :       adc_sense_hi : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ J1 :           sd0_dat0 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ K1 :            sd0_clk : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ K2 :            sd0_cmd : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ K3 :           sd0_dat1 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ L1 :             sd0_cd : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ L3 :           sd0_dat2 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ M1 :           sd0_dat3 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+H15 : ram_ecp5_vref__H15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+H17 :       ram_ldqs_neg : IO_TYPE=SSTL135_I  PULLMODE=NONE
+K18 :         ram_ck_neg : IO_TYPE=SSTL135_I  PULLMODE=NONE
+M16 :        ext_pll_pos : IO_TYPE=SSTL135_I  PULLMODE=NONE
+M17 :        ext_pll_neg : IO_TYPE=SSTL135_I  PULLMODE=NONE
+A16 :       ram_udqs_neg : IO_TYPE=SSTL135_I  PULLMODE=NONE
+C15 : ram_ecp5_vref__C15 : IO_TYPE=SSTL135_I  PULLMODE=NONE
+N15 :            io_miso : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+N16 :            io_mosi : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+R17 :             io_sck : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+T17 :              io_a5 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
+U16 :     spi_config_sck : IO_TYPE=LVCMOS33  PULLMODE=NONE
+
+
+========================================================
+=== Only found in config from orangecrab_r0.2.1.pcf: ===
+========================================================
+
+--none--
+
+

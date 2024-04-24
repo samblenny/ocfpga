@@ -54,11 +54,13 @@ class PinConfig:
         # Columns: Bank, Ball, Schematic-notes, 25F-Func, Dual-Func, 85F-Func
         with open(csv_file) as f:
             reader = csv.reader(f)
-            _ = next(reader)                                # skip header
-            for (bank, ball, sig, _, _, f85)  in reader:    # loop over data
-                if re.match(r'CFG_', f85):                  # skip config pins
+            _ = next(reader)                              # skip header
+            for (bank, ball, sig, _, _, f85)  in reader:  # loop over data
+                if re.match(r'CFG_', f85):                # skip config pins
                     continue
-                if re.match(r'(JTAG|FPGA_RESET|NC)', sig):  # skip non-GPIO pins
+                if re.match(r'(JTAG|NC)', sig):           # skip non-GPIO pins
+                    continue
+                if ball == 'T15' and f85 == 'PROGRAMN':   # 1 of 2 FPGA_RESET's
                     continue
                 p = Pin(bank, ball, sig)
                 if p.clean_sig in self.names_seen:
