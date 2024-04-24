@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: ISC
 # SPDX-FileCopyrightText: Copyright 2024 Sam Blenny
-# Pin constraints for r0.2.1 OrangeCrab 85F (nextpnr-ecp5 lpf format)
+# Pin config for r0.2.1 OrangeCrab 85F (nextpnr-ecp5 lpf format)
 
 # 0, B10: IO_5 (Feather)
 LOCATE COMP "io_5" SITE "B10";

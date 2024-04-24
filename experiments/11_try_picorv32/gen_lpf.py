@@ -7,7 +7,7 @@ Parse CSV file of OrangeCrab 85F pins to generate an lpf pin constraint file
 === DANGER! DANGER! DANGER! ==================================================
 ==                                                                          ==
 ==  The DRAM chip is a 1.35V low voltage device, while the ECP5 IO drivers  ==
-==  can be configured for a range of voltages and modes. The absolute max   == 
+==  can be configured for a range of voltages and modes. The absolute max   ==
 ==  rating for the DRAM chip IO pins is 1.975V. Feather IO pins need 3.3V.  ==
 ==  Sending 3.3V on a RAM_* pin would probably kill the DRAM chip. So we    ==
 ==  need to be very careful about configuring DRAM vs. non-DRAM pins!       ==
@@ -31,14 +31,54 @@ differential).
 
 Later on, I will look at putting the DRAM chip in low power mode and turning
 off the ECP5's differential driver circuitry.
-""" 
+"""
 import csv
 import re
 
 
+class PinConfig:
+
+    def __init__(self):
+        """Model a bunch of ECP5 pins using descriptions read from CSV file.
+        """
+        # Use default CSV if no file
+        csv_file = "oc-ecp5u-25f-85f-pinout.csv"
+
+        # Dictionary for tracking names to avoid duplicates
+        self.names_seen = {}
+
+        # List of pins that have been added
+        self.pins = []
+
+        # Iterate over rows of the CSV file.
+        # Columns: Bank, Ball, Schematic-notes, 25F-Func, Dual-Func, 85F-Func
+        with open(csv_file) as f:
+            reader = csv.reader(f)
+            _ = next(reader)                                # skip header
+            for (bank, ball, sig, _, _, f85)  in reader:    # loop over data
+                if re.match(r'CFG_', f85):                  # skip config pins
+                    continue
+                if re.match(r'(JTAG|FPGA_RESET|NC)', sig):  # skip non-GPIO pins
+                    continue
+                p = Pin(bank, ball, sig)
+                if p.clean_sig in self.names_seen:
+                    raise Exception("duplicate name: {p.clean_sig}, {p.sig}")
+                self.names_seen[p.clean_sig] = 1
+                self.pins.append(p)
+
+    def __str__(self):
+        """Return pin config string in lpf constraint file format.
+        """
+        lines = [
+            "# SPDX-License-Identifier: ISC",
+            "# SPDX-FileCopyrightText: Copyright 2024 Sam Blenny",
+            "# Pin config for r0.2.1 OrangeCrab 85F (nextpnr-ecp5 lpf format)",
+            ""]
+        lines += [str(p) for p in self.pins]
+        return "\n".join(lines)
+
+
 class Pin:
-    # Bookkeeping dictionary to avoid duplicate names
-    names_seen = {}
 
     # IOBUF mode flags
     HIGHZ_33 = "PULLMODE=NONE IO_TYPE=LVCMOS33"
@@ -71,17 +111,18 @@ class Pin:
     DRAM_BANK = ('2', '6', '7')
 
     def __init__(self, bank, ball, sig):
-        """Model the description of an ECP5 pin and its schematic name."""
+        """Model the description of an ECP5 pin and its schematic name.
+        """
         self.bank = bank
         self.ball = ball
         self.sig = sig
 
         # Clean name from CSV schematic column format to good verilog name
         sig = re.sub(r' *\([^)]*\)', '', sig)  # remove (notes)
-        sig = re.sub(r'\+', '_pos', sig)       # '+' -> '_pos' 
-        sig = re.sub(r'-', '_neg', sig)        # '-' -> '_neg' 
-        sig = re.sub(r'#', '_inv', sig)        # '#' -> '_inv' 
-        sig = re.sub(r'\.', '', sig)           # '.' -> '' 
+        sig = re.sub(r'\+', '_pos', sig)       # '+' -> '_pos'
+        sig = re.sub(r'-', '_neg', sig)        # '-' -> '_neg'
+        sig = re.sub(r'#', '_inv', sig)        # '#' -> '_inv'
+        sig = re.sub(r'\.', '', sig)           # '.' -> ''
         sig = sig.lower()                      # lowercase
         if bank in Pin.DRAM_BANK:
             sig = re.sub(r'wired to ', 'ram_', sig)
@@ -89,12 +130,9 @@ class Pin:
             sig = re.sub(r'wired to ', '', sig)
         self.clean_sig = sig
 
-        # Dis-ambiguate duplicates (e.g. unnamed pins wired to P1.35V)
+        # Disambiguate duplicates (e.g. unnamed pins wired to P1.35V)
         if self.clean_sig in ('ram_gnd', 'ram_p135v', 'ram_ecp5_vref'):
             self.clean_sig += f"__{self.ball}"
-        if self.clean_sig in Pin.names_seen:
-            raise Exception("duplicate name: {self.clean_sig}, {self.sig}")
-        Pin.names_seen[self.clean_sig] = 1
 
         # Decide what type of pin this is
         if re.match(r'user_button', sig):  # Button has 1.35V ext pullup
@@ -112,7 +150,7 @@ class Pin:
         elif re.match(r'io_', sig):        # Feather IO gets 3.3V pulldown
             self.iobuf = Pin.PULLDN_33
         else:                              # Default: 3.3V input (for now)
-            self.iobuf = Pin.HIGHZ_33   
+            self.iobuf = Pin.HIGHZ_33
 
         # Double-check that DRAM differential pins are set for 1.35V
         A = self.ball in Pin.ECP5_VREF
@@ -126,29 +164,12 @@ class Pin:
                 raise Exception(f"DRAM Pin ERR: {pin_desc}")
 
     def __str__(self):
-        """Format pin config as commented nextpnr ECP5 lpf constraints."""
+        """Format pin config as commented nextpnr ECP5 lpf constraints.
+        """
         return (f'# {self.bank}, {self.ball}: {self.sig}\n' +
             f'LOCATE COMP "{self.clean_sig}" SITE "{self.ball}";\n' +
             f'IOBUF PORT "{self.clean_sig}" {self.iobuf};\n')
 
 
-# Iterate over rows of the CSV file.
-# Column format: Bank, Ball, Schematic-notes, 25F-Func, Dual-Func, 85F-Func
-pins = []
-with open("oc-ecp5u-25f-85f-pinout.csv") as f:
-    reader = csv.reader(f)
-    _ = next(reader)                                # skip header row
-    for (bank, ball, sig, _, _, f85)  in reader:    # loop over data rows
-        if re.match(r'CFG_', f85):                  # skip ECP5 config pins
-            continue
-        if re.match(r'(JTAG|FPGA_RESET|NC)', sig):  # skip non-GPIO pins
-            continue
-        pins.append(Pin(bank, ball, sig))
-
-# Print the pin config as an lpf constraint file to stdout
-print("# SPDX-License-Identifier: ISC")
-print("# SPDX-FileCopyrightText: Copyright 2024 Sam Blenny")
-print("# Pin constraints for r0.2.1 OrangeCrab 85F (nextpnr-ecp5 lpf format)")
-print()
-for p in pins:
-    print(p)
+if __name__ == "__main__":
+    print(PinConfig())
