@@ -128,7 +128,7 @@ class LpfGraph:
                     lines += ["  " + other.str_for_site(k), ""]
         lines += [""]
 
-        # Format pin configs for shared keys the same IO_TYPE value
+        # Format pin configs for shared keys different IO_TYPE value
         lines += [self.banner("IO_TYPE values **DIFFER** for:")]
         for k in self.sites.keys():  # use my key ordering
             if k in both:
