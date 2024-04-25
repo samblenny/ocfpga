@@ -143,13 +143,13 @@ class Pin:
             self.iobuf = Pin.HIGHZ_135
         elif re.match(r'ext_pll', sig):    # EXT_PLL* pins are in DRAM bank
             self.iobuf = Pin.HIGHZ_135
-        elif re.match(r'io_0', sig):       # RX pin is special, no pulldown
-            self.iobuf = Pin.HIGHZ_33
-        elif re.match(r'io_sda', sig):     # SDA pin is special, pull UP
+        elif re.match(r'io_0', sig):       # RX pin is special: 3.3 pull UP
             self.iobuf = Pin.PULLUP_33
-        elif re.match(r'io_scl', sig):     # SCL pin is special, no pulldown
-            self.iobuf = Pin.HIGHZ_33
-        elif re.match(r'io_', sig):        # Feather IO gets 3.3V pulldown
+        elif re.match(r'io_sda', sig):     # SDA pin is special: 3.3 pull UP
+            self.iobuf = Pin.PULLUP_33
+        elif re.match(r'io_scl', sig):     # SCL pin is special: 3.3 pull UP
+            self.iobuf = Pin.PULLUP_33
+        elif re.match(r'io_', sig):        # Feather IO default: 3.3 pull DOWN
             self.iobuf = Pin.PULLDN_33
         else:                              # Default: 3.3V input (for now)
             self.iobuf = Pin.HIGHZ_33

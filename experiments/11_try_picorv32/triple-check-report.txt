@@ -196,7 +196,7 @@ Comparing config from gen_lpf.py with config from orangecrab_r0.2.1.pcf...
   M18 :               io_1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
   M18 :             gpio_1 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
 
-  N17 :               io_0 : IO_TYPE=LVCMOS33  PULLMODE=NONE
+  N17 :               io_0 : IO_TYPE=LVCMOS33  PULLMODE=UP
   N17 :             gpio_0 : IO_TYPE=LVCMOS33  PULLMODE=DOWN
 
   N18 :            qspi_d3 : IO_TYPE=LVCMOS33  PULLMODE=NONE
@@ -263,7 +263,7 @@ Comparing config from gen_lpf.py with config from orangecrab_r0.2.1.pcf...
 =============================================
 
 C10 :             io_sda : IO_TYPE=LVCMOS33  PULLMODE=UP
- C9 :             io_scl : IO_TYPE=LVCMOS33  PULLMODE=NONE
+ C9 :             io_scl : IO_TYPE=LVCMOS33  PULLMODE=UP
  B4 :  ram_ecp5_vref__B4 : IO_TYPE=SSTL135_I  PULLMODE=NONE
  F1 :          adc_ctrl1 : IO_TYPE=LVCMOS33  PULLMODE=NONE
  F2 :           adc_mux2 : IO_TYPE=LVCMOS33  PULLMODE=NONE
