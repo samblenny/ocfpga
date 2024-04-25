@@ -68,6 +68,41 @@
    that I'm comfortable with the level of risk to the DRAM chip. My full
    comparison report is in [triple-check-report.txt](triple-check-report.txt).
 
+   I made a verilog file, [pullup.v](pullup.v) that implements serial loopback
+   from the OrangeCrab `0` pin (Feather RX) to the OrangeCrab `1` pin (Feather
+   TX) using a 3.3V push-pull output driver. The serial RX input is also
+   mirrored to the red LED channel (active low, same as RX pin) and the `SDA`
+   pin. But, `SDA` is a bit different because I set it up with a 3.3V pullup in
+   my [pullup.lpf](pullup.lpf) bin constraint file and open-drain output in
+   pullup.v (`io_sda <= 1'b0;` and `io_sda <= 1'bz;`, note the z in `1'bz`).
+
+   To build and test a bitstream for my serial loopback and SDA pullup testing
+   gateware, I added several targets to [Makefile](Makefile), including:
+   - `make pullup.lpf`  -- Build the pin constraint file
+   - `make flash-pullup` -- Build and flash [pullup.bit](pullup.bit) using
+     openFPGALoader and a Tigard JTAG probe
+   - `make screen` -- Run `screen` in 19200 baud serial terminal emulation mode
+     with the Tigard UART (assuming it's wired to OrangeCrab pins 0 and 1)
+
+   This is what my logic analyzer's digital and analog captures looked like
+   while I typed the letter `A` in screen, with the Tigard UART wired to the
+   OrangeCrab 85F (see [07 Try Tigard JTAG](../07_try_tigard_jtag/README.md)
+   for wiring details):
+
+   ![screenshot of logic analyzer capture with measurement annotations](11_screen_A_19200baud_loopback.png)
+
+   It seems that setting the mode for a pin in the lpf pin constraint
+   file doesn't do anything to the bitstream without additionally writing
+   Verilog code to set a value for that pin (e.g. `1'b0`, `1'b1`, or `1'bz`).
+
+   For example, if I don't set values for the LED pins, the OrangeCrab's RGB
+   LED lights up dim white. I think that means something about the default ECP5
+   configuration, the bootloader, or the default nextpnr-ecp5 / ecppack
+   configuration puts a pulldown on the LED pins. I say this because the LED
+   lights up bright white if I write Verilog to assign `1'b0` to the LED pins
+   (active low), and it turns completely off if I assign `1'bb1` to the LED
+   pins.
+
 3.  For baseline current and heat dissipation measurements...
 
     Using a relatively inexpensive USB power meter whose calibration I'm not
@@ -577,7 +612,57 @@
    --none--
    ```
 
-   **TODO: finish this**
+9. I made a verilog file, [pullup.v](pullup.v) that implements serial loopback
+   from the OrangeCrab `0` pin (Feather RX) to the OrangeCrab `1` pin (Feather
+   TX) using a 3.3V push-pull output driver. The serial RX input is also
+   mirrored to the red LED channel (active low, same as RX pin) and the `SDA`
+   pin. But, `SDA` is a bit different because I set it up with a 3.3V pullup in
+   my [pullup.lpf](pullup.lpf) bin constraint file and open-drain output in
+   pullup.v (`io_sda <= 1'b0;` and `io_sda <= 1'bz;`, note the z in `1'bz`).
+
+   To build and test a bitstream for my serial loopback and SDA pullup testing
+   gateware, I added several targets to [Makefile](Makefile), including:
+   - `make pullup.lpf`  -- Build the pin constraint file
+   - `make flash-pullup` -- Build and flash [pullup.bit](pullup.bit) using
+     openFPGALoader and a Tigard JTAG probe
+   - `make screen` -- Run `screen` in 19200 baud serial terminal emulation mode
+     with the Tigard UART (assuming it's wired to OrangeCrab pins 0 and 1)
+
+   This is what my logic analyzer's digital and analog captures looked like
+   while I typed the letter `A` in screen, with the Tigard UART wired to the
+   OrangeCrab 85F (see [07 Try Tigard JTAG](../07_try_tigard_jtag/README.md)
+   for wiring details):
+
+   ![screenshot of logic analyzer capture with measurement annotations](11_screen_A_19200baud_loopback.png)
+
+   With the analog captures, I was hoping to see a difference between the TX
+   pin push-pull output driver and the SDA pin with pullup and open-drain
+   driver. The main difference is the high voltage for the SDA and SCL pullup +
+   open-drain pins is about 70 mV less than the push-pull pins. That seems
+   reasonable. I'm pleased there was a measurable difference. It seem like my
+   Verilog code is driving the pins in the modes I intended.
+
+   These are the minimum and maximum voltages that measured on the logic
+   analyzer capture:
+
+   | pin | mode           | V min  | V max |
+   | --- | -------------- | ------ | ----- |
+   | RX  | input          | -0.068 | 3.337 |
+   | TX  | push-pull      | -0.080 | 3.333 |
+   | SDA | open-drain     | -0.082 | 3.261 |
+   | SCL | highz + pullup |  3.183 | 3.269 |
+
+   Also, it seems that setting the mode for a pin in the lpf pin constraint
+   file doesn't do anything to the bitstream without additionally writing
+   Verilog code to set a value for that pin (e.g. `1'b0`, `1'b1`, or `1'bz`).
+
+   For example, if I don't set values for the LED pins, the OrangeCrab's RGB
+   LED lights up dim white. I think that means something about the default ECP5
+   configuration, the bootloader, or the default nextpnr-ecp5 / ecppack
+   configuration puts a pulldown on the LED pins. I say this because the LED
+   lights up bright white if I write Verilog to assign `1'b0` to the LED pins
+   (active low), and it turns completely off if I assign `1'bb1` to the LED
+   pins.
 
 
 ### Verilog and lpf for low current
