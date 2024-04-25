@@ -667,9 +667,7 @@
 
 ### Verilog and lpf for low current
 
-10. **TODO: finish this**
-
-    If I'm reading
+10. If I'm reading
     [orangecrab-hardware issue 19](https://github.com/orangecrab-fpga/orangecrab-hardware/issues/19),
     right, **gateware configuration can reduce OrangeCrab's current draw by
     by about 120 mA!** Most of that has to do with termination resistors. If I
@@ -706,9 +704,9 @@
     "room temperature self refresh" thing. I should probably read the data
     sheet more carefully.
 
-    Using a relatively inexpensive USB power meter whose calibration I'm not
-    sure how much to trust (perhaps accurate to +/- 10 mA?), I measured the
-    following:
+    Using a charging adapter and a relatively inexpensive USB power meter whose
+    calibration I'm not sure how much to trust (perhaps accurate to +/- 10
+    mA?), I measured the following:
 
     | bitstream/firmware          | V    | mA              |
     | --------------------------- | ---- | --------------- |
@@ -731,7 +729,32 @@
 
     Over all, this is better than I expected from reading orangecrab-hardware
     issue 19 (50-ish mA rather than 70-ish mA). But, still, idling at 50 mA is
-    kind of a lot.
+    kind of a lot. [**Update: maybe the lower than expected current is because
+    the charger puts out 5.1V rather than something like 4.9V or less?**]
+
+11. [*time passes as I finish the pullup.v / pullup.bit gateware*]
+
+12. Using my dev computer's USB port (lower voltage than charger), and the same
+    USB power meter, I measured the following:
+
+    | bitstream      | V    | min mA | max mA | avg mA |
+    | -------------- | ---- | ------ | ------ | ------ |
+    | bootloader DFU | 4.97 |     77 |     90 |     84 |
+    | pullup.bit     | 4.97 |     50 |     57 |     54 |
+
+    The min/max/average numbers are approximate. There wasn't any integrator or
+    other fancy stuff involved. I just eyeballed it off the power meter screen.
+    But, it looks like, this time, the bootloader current measurement matches
+    up with the description in orangecrab-hardware issue 19. I'm guessing the
+    difference compared to my earlier measurements was because of a lower USB
+    supply voltage (4.97V vs. 5.10V).
+
+    Also, my pullup and serial loopback gateware averages about 30 mA less than
+    the DFU bootloader. I'm pleased to see that the absence of a soft CPU makes
+    a measurable difference.
+
+
+
 
 
 ### PicoRV32 bitstream ROM to change a pin
