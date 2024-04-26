@@ -75,6 +75,10 @@ class PinConfig:
             "# SPDX-License-Identifier: ISC",
             "# SPDX-FileCopyrightText: Copyright 2024 Sam Blenny",
             "# Pin config for r0.2.1 OrangeCrab 85F (nextpnr-ecp5 lpf format)",
+            # MCCLK_FREQ (same as nextpnr --freq ...) controls the speed at
+            # which the ECP5 reads its configuration from flash. This is not
+            # a way of specifying the oscillator clock input frequency.
+            "SYSCONFIG COMPRESS_CONFIG=ON MCCLK_FREQ=2.4;",
             ""]
         lines += [str(p) for p in self.pins]
         return "\n".join(lines)
@@ -118,6 +122,7 @@ class Pin:
         self.bank = bank
         self.ball = ball
         self.sig = sig
+        self.freq_MHz = None
 
         # Clean name from CSV schematic column format to good verilog name
         sig = re.sub(r' *\([^)]*\)', '', sig)  # remove (notes)
@@ -154,6 +159,10 @@ class Pin:
         else:                              # Default: 3.3V input (for now)
             self.iobuf = Pin.HIGHZ_33
 
+        # Special check for the main oscillator clock input
+        if re.match(r'ref_clk', sig):
+            self.freq_MHz = "48"
+
         # Double-check that DRAM differential pins are set for 1.35V
         A = self.ball in Pin.ECP5_VREF
         B = self.ball in Pin.P135V
@@ -168,9 +177,12 @@ class Pin:
     def __str__(self):
         """Format pin config as commented nextpnr ECP5 lpf constraints.
         """
-        return (f'# {self.bank}, {self.ball}: {self.sig}\n' +
+        s = (f'# {self.bank}, {self.ball}: {self.sig}\n' +
             f'LOCATE COMP "{self.clean_sig}" SITE "{self.ball}";\n' +
             f'IOBUF PORT "{self.clean_sig}" {self.iobuf};\n')
+        if self.freq_MHz:
+            s += f'FREQUENCY PORT "{self.clean_sig}" {self.freq_MHz} MHZ;\n'
+        return s
 
 
 if __name__ == "__main__":

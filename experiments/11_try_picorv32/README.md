@@ -31,7 +31,8 @@
 
 *work in progress*
 
-1. My initial attempt at building a PicoRV32 pretty much just worked, producing
+1. **Build a PicoRV32 bitstream**:
+   My initial attempt at building a PicoRV32 pretty much just worked, producing
    a bitstream file that looks like I could flash it to my OrangeCrab 85F. I
    didn't try to run this because it's very unlikely that the IO pins are
    configured reasonably.
@@ -49,7 +50,8 @@
     312K	picorv32.bit
     ```
 
-2. I made a big table of ECP5 IO banks, pin/ball names, schematic signal names,
+2. **Verilog and lpf for a pullup**:
+   I made a big table of ECP5 IO banks, pin/ball names, schematic signal names,
    and pin functions to help me make sense of how pin constraints should be
    assigned. The CSV version of my table is in
    [oc-ecp5u-25f-85f-pinout.csv](oc-ecp5u-25f-85f-pinout.csv).
@@ -103,39 +105,69 @@
    (active low), and it turns completely off if I assign `1'bb1` to the LED
    pins.
 
-3.  For baseline current and heat dissipation measurements...
+3. **Verilog and lpf for low power**:
+   I wrote [lowpower.v](lowpower.v) to try holding the DRAM chip's reset pin
+   low. The [Makefile](Makefile) target to build it is `make lowpower.bit` and
+   the target to flash it is `make flash-lowpower`.
 
-    Using a relatively inexpensive USB power meter whose calibration I'm not
-    sure how much to trust (perhaps accurate to +/- 10 mA?), I measured the
-    following:
+   When I ran lowpower.bit, there was no measurable difference in current
+   draw compared to my pullup.bit gateware. I guess that makes sense because
+   the DRAM chip does not appear to be putting out any heat above the average
+   board temperature (checking with thermal camera).
 
-    | bitstream/firmware          | V    | mA              |
-    | --------------------------- | ---- | --------------- |
-    | bootloader                  | 5.10 | 51 (avg, noisy) |
-    | verilog pwm_rainbow example | 5.10 | 43 (stable-ish) |
+   The Lattice tech notes on ECP5 power saving talk about some Basic Elements
+   for controlling differential and LVDS pin drivers, but those don't seem to
+   be supported by Yosys and Nextpnr. The tech note also mentions PLL, DLL, and
+   DCU elements, some of which may be supported. I tried instantiating a PLL
+   and putting it in standby, but that didn't change the current draw.
 
-    On the thermal camera, these measurements were pretty typical:
+   I tried enumerating all the Feather and analog mux IO pins and making
+   sure they weren't floating. That made a little difference once I learned
+   to use my USB power meter's integrating feature. But, it was only a tiny
+   fraction of the overall current draw.
 
-    | bitstream/firmware          | ECP5 °F | DRAM °F | Ambient °F |
-    | --------------------------- | ------- | ------- | ---------- |
-    | bootloader                  | 88.2    | 83.9    | 77.6       |
-    | verilog pwm_rainbow example | 85.2    | 81.2    | 77.1       |
+   Then, I finally thought to try unplugging the Tigard board from USB. Turns
+   out that I had about 30 mA of current on the GND pin! I'm not sure if that
+   was due to a low-side shunt on the power meter or what. But, accounting for
+   the ground loop current, my lowpower.bit gateware only draws about 25 mA.
 
-    The OrangeCrab r0.2.1 board seems to spread heat very well. Aside from the
-    ECP5 and the voltage regulators, the rest of the board had an approximately
-    uniform temperature. It seemed like most the heat was coming from the ECP5.
+   I figured out how to calculate integrated average current. My power meter
+   shows integrated mAh and a resettable minutes:seconds timer. So, to get
+   accurate-ish readings, I watched for the mAh number to roll over, then
+   recorded the elapsed minutes and seconds. I calculated average mA as:
 
-    The pwm_rainbow bitstream (from orangecrab-examples/verilog) ran at about
-    8 mA less, on average, compared to the bootloader in DFU mode.
+   ```python
+   def mA(mAh, min, sec):
+       # [mA/s] = (mAh * 3600 [s/h]) / ((min * 60 [s/min]) + sec [s])
+       return (mAh*3600) / (min*60 + sec)
+   ```
 
-    Over all, this is better than I expected from reading orangecrab-hardware
-    issue 19 (50-ish mA rather than 70-ish mA). But, still, idling at 50 mA is
-    kind of a lot.
+   These are the measurements for the DFU bootloader gateware and my lowpower
+   gateware, with and without Tigard USB power connected:
 
+   | Gateware   | mAh | mm:ss |   mA     | Tigard USB |
+   | ---------- | --- | ----- | -------- | ---------- |
+   | bootloader |   2 |  1:29 | 80.9     | yes        |
+   | bootloader |   2 |  2:29 | 48.3     | NO         |
+   | lowpower   |   5 |  5:32 | 54.1     | yes        |
+   | lowpower   |   5 | 12:00 | **25.0** | NO         |
 
-4. ...
+   Difference in average current with and without the ground loop:
 
-5. ...
+   | Gateware   | With loop | Without loop | Difference |
+   | ---------- | --------- | ------------ | ---------- |
+   | bootloader |   80.9 mA |      48.3 mA |    32.6 mA |
+   | lowpower   |   54.1 mA |      25.0 mA |    29.1 mA |
+
+   So, if I unplug the JTAG probe, my baseline current for gateware with no
+   clock is 25 mA, compared to 48 mA for the DFU bootloader under the same
+   conditions. I can live with 25 mA.
+
+4. **PicoRV32 bitstream ROM to change a pin**:
+   ...
+
+5. **PicoRV32 XIP from flash to change a pin**:
+   ...
 
 
 ## Lab Notes
@@ -729,8 +761,7 @@
 
     Over all, this is better than I expected from reading orangecrab-hardware
     issue 19 (50-ish mA rather than 70-ish mA). But, still, idling at 50 mA is
-    kind of a lot. [**Update: maybe the lower than expected current is because
-    the charger puts out 5.1V rather than something like 4.9V or less?**]
+    kind of a lot.
 
 11. [*time passes as I finish the pullup.v / pullup.bit gateware*]
 
@@ -748,13 +779,68 @@
     up with the description in orangecrab-hardware issue 19. I'm guessing the
     difference compared to my earlier measurements was because of a lower USB
     supply voltage (4.97V vs. 5.10V).
+    [**UPDATE:** *Nope, my guess was wrong. It was the JTAG probe.*]
 
     Also, my pullup and serial loopback gateware averages about 30 mA less than
     the DFU bootloader. I'm pleased to see that the absence of a soft CPU makes
     a measurable difference.
 
+13. I wrote [lowpower.v](lowpower.v) to try holding the DRAM chip's reset pin
+    low. The makefile target to build it is `make lowpower.bit` and the target
+    to flash it is `make flash-lowpower`.
 
+    When I ran lowpower.bit, there was no measurable difference in current
+    draw compared to my pullup.bit gateware. I guess that makes sense because
+    the DRAM chip does not appear to be putting out any heat above the average
+    board temperature (checking with thermal camera).
 
+    At this point, I'm not sure how to proceed. The Lattice tech notes on ECP5
+    power saving talk about some Basic Elements for controlling differential
+    and LVDS pin drivers, but those don't seem to be supported by Yosys and
+    Nextpnr. The tech note also mentions PLL, DLL, and DCU elements, some of
+    which may be supported.
+
+    I tried instantiating a PLL and putting it in standby, but that didn't
+    change the current draw.
+
+    I tried enumerating all the Feather and analog mux IO pins and making
+    sure they weren't floating. That made a little difference once I learned
+    to use my USB power meter's integrating feature. But, it was only a tiny
+    fraction of the overall current draw.
+
+14. **Found it! Lots of current on the Tigard JTAG GND line!** When I tried
+    unplugging the Tigard jumpers and USB cable, I found that unplugging the
+    USB power or the JTAG header would drop the OrangeCrab's current draw by
+    about 30 mA. When I unplugged the JTAG pins one at a time, nothing changed
+    until I unplugged the GND pin (having disconnected the others).
+
+    Also, I figured out how to calculate average integrated mA over multiple
+    minutes using my USB power meter. The meter shows mAh and minutes:seconds
+    with a resetable timer. So, I watched for the mAh number to roll over,
+    recorded the elapsed minutes and seconds, then calculated mA as:
+
+    ```python
+    def mA(mAh, min, sec):
+        # [mA/s] = (mAh * 3600 [s/h]) / ((min * 60 [s/min]) + sec [s])
+        return (mAh*3600) / (min*60 + sec)
+    ```
+
+    These are the measurements for the DFU bootloader gateware and my lowpower
+    gateware, with and without Tigard USB power connected:
+
+    | Gateware   | mAh | mm:ss |   mA | Tigard USB |
+    | ---------- | --- | ----- | ---- | ---------- |
+    | bootloader |   2 |  1:29 | 80.9 | YES        |
+    | bootloader |   2 |  2:29 | 48.3 | no         |
+    | lowpower   |   5 |  5:32 | 54.1 | YES        |
+    | lowpower   |   5 | 12:00 | 25.0 | no         |
+
+    Difference in average integrated current with and without the ground loop:
+
+    | Gateware   | With loop | Without loop | Difference |
+    | ---------- | --------- | ------------ | ---------- |
+    | bootloader |   80.9 mA |      48.3 mA |    32.6 mA |
+    | lowpower   |   54.1 mA |      25.0 mA |    29.1 mA |
 
 
 ### PicoRV32 bitstream ROM to change a pin
