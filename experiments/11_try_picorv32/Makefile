@@ -12,6 +12,9 @@ all:
 	@echo 'flash-pullup'
 	@echo '  Build and flash pullup.bit using openFPGALoader + Tigard JTAG'
 	@echo ''
+	@echo 'flash-uart'
+	@echo '  Build and flash uart.bit using openFPGALoader + Tigard JTAG'
+	@echo ''
 	@echo 'screen'
 	@echo '  Start 19200 baud screen terminal emulator using Tigard UART'
 	@echo ''
@@ -27,6 +30,9 @@ all:
 	@echo 'pullup.bit'
 	@echo '  Build ECP5 bitstream to put pullup on SDA'
 	@echo ''
+	@echo 'uart.bit'
+	@echo '  Build ECP5 bitstream to send async serial on TX'
+	@echo ''
 
 # Flash lowpower bitstream via Tigard JTAG, rebuilding bitstream if needed
 .PHONY: flash-lowpower
@@ -39,6 +45,12 @@ flash-lowpower: lowpower.bit
 flash-pullup: pullup.bit
 	openFPGALoader -c tigard --freq 1M \
 		-f --file-type raw --verify -o 0x80000 pullup.bit
+
+# Flash uart bitstream via Tigard JTAG, rebuilding bitstream if needed
+.PHONY: flash-uart
+flash-uart: uart.bit
+	openFPGALoader -c tigard --freq 1M \
+		-f --file-type raw --verify -o 0x80000 uart.bit
 
 # Start terminal emulator (screen) with Tigard at low-ish baud rate so serial
 # monitor LED flashing will be slow enough to see clearly
@@ -69,6 +81,15 @@ pullup.bit: pullup.lpf pullup.v Makefile
 		--85k --package CSFBGA285 --lpf pullup.lpf
 	ecppack --compress --input pullup_out.config --bit pullup.bit
 	rm -f pullup.json pullup_out.config
+
+# Build bitstream with serial output on TX pin
+uart.bit: lowpower.lpf uart.sv oc85f.sv Makefile
+	yosys -p "read_verilog -sv -noautowire uart.sv oc85f.sv; \
+		synth_ecp5 -json uart.json"
+	nextpnr-ecp5 --json uart.json --textcfg uart_out.config \
+		--85k --package CSFBGA285 --lpf lowpower.lpf
+	ecppack --compress --input uart_out.config --bit uart.bit
+	rm -f uart.json uart_out.config
 
 # Build pin constraint file for low power configuration
 lowpower.lpf: gen_lpf.py
