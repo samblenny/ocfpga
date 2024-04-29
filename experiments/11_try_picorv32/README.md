@@ -164,7 +164,23 @@
    conditions. I can live with 25 mA.
 
 4. **PicoRV32 bitstream ROM to change a pin**:
-   ...
+
+   I wrote a couple SystemVerilog modules, [oc85f.sv](oc85f.sv) and
+   [uart.sv](uart.sv), along with [Makefile](Makefile) rules to compile them as
+   [uart.bit](uart.bit). The make target I've been using to test these with is
+   `make flash-uart`.
+
+   My uart module currently only has transmit implemented. It can read the data
+   to send from an 8-bit input port when activated by the write-strobe input
+   port. Baud rate is hardcoded to 19200 baud, but the code has a comment with
+   a table of constants for other baud rates. Setting a different rate would be
+   straightforward. But, 19200 baud is a nice compromise between fast enough to
+   drain buffers reasonably quickly and slow enough to be visible if I echo the
+   TX pin to the status LED.
+
+   **TODO:** wire my half-UART up to a PicoRV32 data bus and write some code to
+   send a string.
+
 
 5. **PicoRV32 XIP from flash to change a pin**:
    ...
@@ -845,7 +861,22 @@
 
 ### PicoRV32 bitstream ROM to change a pin
 
-20. **TODO**
+15. I wrote a couple SystemVerilog modules, [oc85f.sv](oc85f.sv) and
+    [uart.sv](uart.sv), along with [Makefile](Makefile) rules to compile them
+    as [uart.bit](uart.bit). The make target I've been using to test these with
+    is `make flash-uart`.
+
+    My uart module currently only has transmit implemented. It can read the
+    data to send from an 8-bit input port when activated by the write-strobe
+    input port. Baud rate is hardcoded to 19200 baud, but the code has a
+    comment with a table of constants for other baud rates. Setting a different
+    rate would be straightforward. But, 19200 baud is a nice compromise between
+    fast enough to drain buffers reasonably quickly and slow enough to be
+    visible if I echo the TX pin to the status LED.
+
+    My plan for the half-UART is to wire its data and write-strobe ports up to
+    the data bus of a PicoRV32. I'm hoping I can set it up so that writing a
+    byte to a special address will cause that byte to be sent on the UART.
 
 
 ### PicoRV32 XIP from flash to change a pin
