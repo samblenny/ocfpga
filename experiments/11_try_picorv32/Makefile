@@ -6,20 +6,17 @@
 all:
 	@echo 'Available make targets:'
 	@echo ''
-	@echo 'flash-lowpower'
-	@echo '  Build and flash lowpower.bit using openFPGALoader + Tigard JTAG'
+	@echo 'flash-lowpower  Build and flash lowpower.bit'
 	@echo ''
-	@echo 'flash-pullup'
-	@echo '  Build and flash pullup.bit using openFPGALoader + Tigard JTAG'
+	@echo 'flash-pullup    Build and flash pullup.bit'
 	@echo ''
-	@echo 'flash-uart'
-	@echo '  Build and flash uart.bit using openFPGALoader + Tigard JTAG'
+	@echo 'flash-uart      Build and flash uart.bit'
 	@echo ''
-	@echo 'screen'
-	@echo '  Start 19200 baud screen terminal emulator using Tigard UART'
+	@echo 'soc1            Build and flash soc1.bit'
 	@echo ''
-	@echo 'pullup.lpf'
-	@echo '  Generate lpf file for putting a pullup on SDA (uses gen_lpf.py)'
+	@echo 'screen          Start 19200 baud screen terminal emulator'
+	@echo ''
+	@echo 'pullup.lpf      Generate lpf file for pullup on SDA'
 	@echo ''
 	@echo 'triple-check-report.txt'
 	@echo '  Compare output of gen_lpf.py with orangecrab_r0.2.1.pcf'
@@ -27,11 +24,11 @@ all:
 	@echo 'lowpower.bit'
 	@echo '  Build ECP5 bitstream to configure OrangeCrab 85F for low power'
 	@echo ''
-	@echo 'pullup.bit'
-	@echo '  Build ECP5 bitstream to put pullup on SDA'
+	@echo 'pullup.bit      Build bitstream to put pullup on SDA'
 	@echo ''
-	@echo 'uart.bit'
-	@echo '  Build ECP5 bitstream to send async serial on TX'
+	@echo 'uart.bit        Build bitstream to send async serial on TX'
+	@echo ''
+	@echo 'soc1.bit        Build bitstream for SoC with PicoRV32 and uart'
 	@echo ''
 
 # Flash lowpower bitstream via Tigard JTAG, rebuilding bitstream if needed
@@ -51,6 +48,12 @@ flash-pullup: pullup.bit
 flash-uart: uart.bit
 	openFPGALoader -c tigard --freq 1M \
 		-f --file-type raw --verify -o 0x80000 uart.bit
+
+# Flash soc1 bitstream via Tigard JTAG, rebuilding bitstream if needed
+.PHONY: flash-soc1
+soc1: uart.bit
+	openFPGALoader -c tigard --freq 1M \
+		-f --file-type raw --verify -o 0x80000 soc1.bit
 
 # Start terminal emulator (screen) with Tigard at low-ish baud rate so serial
 # monitor LED flashing will be slow enough to see clearly
@@ -90,6 +93,16 @@ uart.bit: lowpower.lpf uart.sv oc85f.sv Makefile
 		--85k --package CSFBGA285 --lpf lowpower.lpf
 	ecppack --compress --input uart_out.config --bit uart.bit
 	rm -f uart.json uart_out.config
+
+# Build bitstream with serial output on TX pin
+PICORV32=../../../picorv32/picorv32.v
+soc1.bit: lowpower.lpf soc1.sv uart1.sv $(PICORV32) Makefile
+	yosys -p "read_verilog -sv -noautowire uart1.sv $(PICORV32) soc1.sv; \
+		synth_ecp5 -json soc1.json"
+	nextpnr-ecp5 --json soc1.json --textcfg soc1_out.config \
+		--85k --package CSFBGA285 --lpf lowpower.lpf
+	ecppack --compress --input soc1_out.config --bit soc1.bit
+	rm -f soc1.json soc1_out.config
 
 # Build pin constraint file for low power configuration
 lowpower.lpf: gen_lpf.py

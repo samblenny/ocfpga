@@ -869,3 +869,9 @@
     the data bus of a PicoRV32. I'm hoping I can set it up so that writing a
     byte to a special address will cause that byte to be sent on the UART.
 
+16. I'm fumbling around with [soc1.sv](soc1.sv), trying to instantiate a
+    `picorv32` module. Definitely doing it wrong. Although I've gotten past
+    compiler errors about syntax and missing ports, it appears from the ECP5
+    resource usage table that all the picorv32 stuff is getting optimized away
+    to nothing. I'm gonna need to read up on how this stuff is supposed to
+    work.
