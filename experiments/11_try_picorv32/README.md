@@ -23,9 +23,6 @@
    IO pin and write code to modulate the output. Probably this will use object
    code baked into the bitstream as a ROM.
 
-5. **PicoRV32 XIP from flash to change a pin**: Modify the previous experiment
-   to use eXecute In Place (XIP) to run compiled C code from SPI flash.
-
 
 ## Results
 
@@ -182,10 +179,6 @@
    send a string.
 
 
-5. **PicoRV32 XIP from flash to change a pin**:
-   ...
-
-
 ## Lab Notes
 
 ### Contents:
@@ -197,8 +190,6 @@
 - [Verilog and lpf for low power](#Verilog-and-lpf-for-low-current)
 
 - [PicoRV32 bitstream ROM to change a pin](#PicoRV32-bitstream-ROM-to-change-a-pin)
-
-- [PicoRV32 XIP from flash to change a pin](#PicoRV32-XIP-from-flash-to-change-a-pin)
 
 
 ### Build a PicoRV32 bitstream
@@ -878,12 +869,3 @@
     the data bus of a PicoRV32. I'm hoping I can set it up so that writing a
     byte to a special address will cause that byte to be sent on the UART.
 
-
-### PicoRV32 XIP from flash to change a pin
-
-30. **TODO**
-
-
-### PicoRV32 C code to XIP ROM to change a pin
-
-40. **TODO**

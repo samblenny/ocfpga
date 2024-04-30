@@ -10,7 +10,7 @@ Notes on OrangeCrab 85F ECP5 fpga dev board experiments.
 ## Experiments
 
 - [11 Try PicoRV32](experiments/11_try_picorv32/README.md)
-  (work in progress)
+  (work in progress, includes .bit files)
 
 - [10 Try VexRiscv](experiments/10_try_vexriscv/README.md)
   (nope)
