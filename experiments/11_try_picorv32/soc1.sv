@@ -12,6 +12,12 @@ module soc1(
 
   inout  logic io_sda,
   inout  logic io_scl,
+  inout  logic io_5,
+  inout  logic io_6,
+  inout  logic io_9,
+  inout  logic io_10,
+  inout  logic io_11,
+  inout  logic io_12,
 
   input  logic io_a0,
   input  logic io_a1,
@@ -22,25 +28,10 @@ module soc1(
   input  logic io_mosi,
   input  logic io_miso,
   input  logic io_0,     // Feather RX
-  input  logic io_5,
-  input  logic io_6,
-  input  logic io_9,
-  input  logic io_10,
-  input  logic io_11,
-  input  logic io_12,
   input  logic io_13,
 
   input        ref_clk,  // OSC1 OUT 48 MHz
 );
-
-// Constants for a timer that overflows at 1000 ms
-//   19208864 = (2 ** 26) - 48e6
-localparam TIMER_WIDE = 26;
-localparam TIMER_MSB = 25;
-localparam TIMER_INC = 26'd1;
-localparam OVERFLOW_1S = 26'd19208864;
-
-logic [25:0] timer = 26'b0;
 
 // picorv32_wb interface
 logic        trap;
@@ -94,6 +85,14 @@ logic        mem_instr;   // out
 //   .mem_instr
 // );
 
+
+// Wishbone read cycle one-hot state machine
+localparam RX_IDLE    = 4'h1;
+localparam RX_WAIT    = 4'h2;
+localparam RX_CALLBK1 = 4'h4;
+localparam RX_CALLBK2 = 4'h8;
+logic [3:0] rx_state = RX_IDLE;
+
 // 19200 baud async serial UART
 localparam UART1_ADR = 32'h0FF;
 uart1 #(
@@ -102,7 +101,6 @@ uart1 #(
   // Wishbone outputs
   .dat_o    (wbm_dat_i),
   .ack_o    (wbm_ack_i),
-
   // Wishbone inputs
   .clk_48_i (ref_clk),
   .rst_i    (wb_rst_i),
@@ -112,14 +110,17 @@ uart1 #(
   .stb_i    (wbm_stb_o),
   .cyc_i    (wbm_cyc_o),
   .sel_i    (wbm_sel_o),
-
   // GPIO
   .tx_o     (io_1),       // TX pin follows UART tx net
   .rx_i     (io_0),       // RX pin drives UART rx net
+  // Interrupt
+  .irq_o    (irq_rx),
 );
 
 // uart1 IO
+reg [7:0] rx_data = 8'b0;
 reg [7:0] tx_data = 8'h54;  // 0x41='A' 0x54='T'
+logic     irq_rx;
 
 // Start with LED turned off
 reg [2:0] led_rgb_n = 3'b111;
@@ -129,6 +130,15 @@ assign led_b  = led_rgb_n[0];  // LED Blue, active low
 
 // Reset state
 reg [1:0] rst_state = 2'b11;
+
+//////////////////////////////////////////////////////////
+//// Debug pins for logic analyzer ///////////////////////
+//////////////////////////////////////////////////////////
+reg [2:0] dbg = 3'b111;
+assign io_5  = dbg[0];
+assign io_6  = dbg[1];
+assign io_9  = dbg[2];
+/////////////////////////////////////////////////////////
 
 // Top level state machine
 always_ff @(posedge ref_clk) begin: main
@@ -141,22 +151,88 @@ always_ff @(posedge ref_clk) begin: main
   endcase
   wb_rst_i <= rst_state[1];
 
-  // Strobe tx_w every 1000 ms
-  if (timer == 0) begin
-    wbm_dat_o <= tx_data;
-    wbm_adr_o <= UART1_ADR;
-    wbm_sel_o <= 3'd0;
-    wbm_we_o <= 1'b1;
-    wbm_stb_o <= 1'b1;
-    wbm_cyc_o <= 1'b1;
-    timer <= OVERFLOW_1S;
+  // Respond to serial RX interrupt by reading byte from UART (wishbone read
+  // cycle) then echoing that byte back over the UART (wishbone write cycle)
+  unique case (rx_state)
+    RX_IDLE: begin
+        if (irq_rx) begin
+          ////////////////////////////
+          dbg = 5'd2;
+          ////////////////////////////
+          // Start a UART read cycle
+          wbm_adr_o <= UART1_ADR;
+          wbm_sel_o <= 3'd0;
+          wbm_we_o  <= 1'b0;   // 0 for read
+          wbm_stb_o <= 1'b1;
+          wbm_cyc_o <= 1'b1;
+          rx_state  <= RX_WAIT;
+        end else begin
+          ////////////////////////////
+          dbg = 5'd1;
+          ////////////////////////////
+          rx_state  <= RX_IDLE;
+        end
+      end
+    RX_WAIT: begin
+        if (wbm_ack_i) begin
+          ////////////////////////////
+          dbg = 5'd4;
+          ////////////////////////////
+          // Got UART read ACK, so latch the UART CSR data
+          wbm_stb_o <= 1'b0;
+          wbm_cyc_o <= 1'b0;
+          // Unpack the CSR
+          rx_data  <= wbm_dat_i[7:0];
+          rx_state <= RX_CALLBK1;
+        end else begin
+          ////////////////////////////
+          dbg = 5'd3;
+          ////////////////////////////
+          rx_state <= RX_WAIT;
+        end
+      end
+    RX_CALLBK1: begin
+        // Set up a write cycle to echo the received data
+        if (wbm_ack_i) begin
+          ////////////////////////////
+          dbg = 5'd5;
+          ////////////////////////////
+          rx_state <= RX_CALLBK1;   // Wait if ACK hasn't dropped yet
+        end else begin
+          ////////////////////////////
+          dbg = 5'd6;
+          ////////////////////////////
+          wbm_dat_o <= rx_data;     // Echo RX byte if UART is ready
+          wbm_adr_o <= UART1_ADR;
+          wbm_sel_o <= 3'd0;
+          wbm_we_o  <= 1'b1;
+          wbm_stb_o <= 1'b1;
+          wbm_cyc_o <= 1'b1;
+          rx_state  <= RX_CALLBK2;
+        end
+      end
+    RX_CALLBK2: begin
+        ////////////////////////////
+        dbg = 5'd7;
+        ////////////////////////////
+        // End the write cycle
+        wbm_stb_o <= 1'b0;
+        wbm_cyc_o <= 1'b0;
+        rx_state  <= RX_IDLE;
+      end
+    default: begin
+        rx_state <= RX_IDLE;
+      end
+  endcase
+
+  // Color code the activity LED based on RX interrupt status
+  if (irq_rx) begin
+    led_rgb_n[2] <= io_0 & io_1;  // Red LED shows TX or RX activity
+    led_rgb_n[1] <= 1'b1;         // Green off
   end else begin
-    wbm_we_o <= 1'b0;
-    wbm_stb_o <= 1'b0;
-    wbm_cyc_o <= 1'b0;
-    timer <= timer + TIMER_INC;
+    led_rgb_n[2] <= 1'b1;         // Red off
+    led_rgb_n[1] <= io_0 & io_1;  // Red LED shows TX or RX activity
   end
-  led_rgb_n[2] <= io_0 & io_1;  // Red LED shows TX or RX activity
 
 end: main
 

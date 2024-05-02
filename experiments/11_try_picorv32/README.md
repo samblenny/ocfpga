@@ -175,6 +175,15 @@
    drain buffers reasonably quickly and slow enough to be visible if I echo the
    TX pin to the status LED.
 
+   [*time passes as I learn about verilog, picorv32, and wishbone bus*]
+
+   My new [uart1.sv](uart1.sv) UART does full duplex async serial as part of
+   my [soc1.sv](soc1.sv) SoC-in-progress. The UART now uses wishbone bus for
+   data transfer, so hopefully I can wire it up to the `picorv32_wb` module.
+   For now, my so-called soc just does a loopback echo of RX bytes to TX
+   bytes. But, it's doing that with an RX interrupt signal and wishbone bus
+   transfers.
+
    **TODO:** wire my half-UART up to a PicoRV32 data bus and write some code to
    send a string.
 
@@ -875,3 +884,29 @@
     resource usage table that all the picorv32 stuff is getting optimized away
     to nothing. I'm gonna need to read up on how this stuff is supposed to
     work.
+
+17. I got [uart1.sv](uart1.sv) and `soc1.sv` working together over a wishbone
+    bus interconnect. At the moment, my "soc" (which isn't much of a soc yet)
+    just does serial loopback from RX to TX. But, now, instead of just using
+    a wire for loopback, it's using an RX interrupt and wishbone bus
+    transfers. This gets me a lot closer to being able to wire peripherals up
+    to a `picorv32_wb` module.
+
+    I'm committing the `uart1.sv` and `soc1.sv` code in intermediate form,
+    including some code to send 3-bit debug codes to my logic analyzer. I
+    wanted to document the technique I used to troubleshoot a bus handshaing
+    problem with my uart not letting go of the ACK net properly. For these
+    captures, I wired up OrangeCrab pins 0 (RX), 1 (TX), 5, 9, and 10 to my
+    logic analyzer.
+
+    This one shows the TX echo frame starting half way through the stop bit
+    of the RX frame, along with a very zoomed out view of the debug codes:
+
+    ![Logic analyzer capture showing a serial loopback demo](11_echo_k_wide.png)
+
+    This view is zoomed in *a lot* on the rapid sequence of debug codes that
+    trace the sequence of state machine transitions involved in receiving and
+    re-transmitting the async serial bytes:
+
+    ![Zoomed in logic analyzer capture showing a sequence of debug codes](11_echo_k_debug_codes.png)
+

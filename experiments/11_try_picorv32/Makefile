@@ -59,10 +59,10 @@ flash-soc1: soc1.bit
 # monitor LED flashing will be slow enough to see clearly
 .PHONY: screen
 screen:
-	@echo 'Starting terminal emulator (screen)...'
-	@echo '  to quit screen, type: Ctrl-a k y'
-	@echo ''
-	@read -p 'type Enter to begin (remember: Ctrl-a k y) > ' REPLY
+#	@echo 'Starting terminal emulator (screen)...'
+#	@echo '  to quit screen, type: Ctrl-a k y'
+#	@echo ''
+#	@read -p 'type Enter to begin (remember: Ctrl-a k y) > ' REPLY
 	screen -fn \
 		/dev/serial/by-id/usb-SecuringHardware.com_Tigard_*-if00-port0 \
 		19200
