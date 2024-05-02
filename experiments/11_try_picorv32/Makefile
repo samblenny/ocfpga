@@ -51,8 +51,8 @@ flash-uart: uart.bit
 
 # Flash soc1 bitstream via Tigard JTAG, rebuilding bitstream if needed
 .PHONY: flash-soc1
-soc1: uart.bit
-	openFPGALoader -c tigard --freq 1M \
+flash-soc1: soc1.bit
+	openFPGALoader -c tigard --freq 2M \
 		-f --file-type raw --verify -o 0x80000 soc1.bit
 
 # Start terminal emulator (screen) with Tigard at low-ish baud rate so serial

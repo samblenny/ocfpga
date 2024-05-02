@@ -5,10 +5,13 @@
 
 // IO ports are r0.2.1 OrangeCrab 85F signal names
 module soc1(
-  output logic led_r,        // RBG LED red (active low)
-  output logic led_g,        // RBG LED green (active low)
-  output logic led_b,        // RBG LED blue (active low)
-  output logic io_1,         // Feather TX
+  output logic led_r,    // RBG LED red (active low)
+  output logic led_g,    // RBG LED green (active low)
+  output logic led_b,    // RBG LED blue (active low)
+  output logic io_1,     // Feather TX
+
+  inout  logic io_sda,
+  inout  logic io_scl,
 
   input  logic io_a0,
   input  logic io_a1,
@@ -19,8 +22,6 @@ module soc1(
   input  logic io_mosi,
   input  logic io_miso,
   input  logic io_0,     // Feather RX
-  input  logic io_sda,
-  input  logic io_scl,
   input  logic io_5,
   input  logic io_6,
   input  logic io_9,
@@ -41,104 +42,121 @@ localparam OVERFLOW_1S = 26'd19208864;
 
 logic [25:0] timer = 26'b0;
 
-// uart1 IO
-logic       tx;
-logic       tx_busy;
-logic [7:0] tx_data = 8'h54;  // 0x41='A' 0x54='T'
-logic       tx_w    = 1'b0;   // write not asserted
-
-// picorv32 outputs
+// picorv32_wb interface
 logic        trap;
-logic        mem_valid;
-logic        mem_instr;
-logic        mem_ready;
-logic [31:0] mem_addr;
-logic [31:0] mem_wdata;
-logic [ 3:0] mem_wstrb;
-logic        mem_la_read;
-logic        mem_la_write;
-logic [31:0] mem_la_addr;
-logic [31:0] mem_la_wdata;
-logic [ 3:0] mem_la_wstrb;
-logic        pcpi_valid;
-logic [31:0] pcpi_insn;
-logic [31:0] pcpi_rs1;
-logic [31:0] pcpi_rs2;
-logic [31:0] eoi;
-logic        trace_valid;
-logic [35:0] trace_data;
+logic        wb_rst_i = 1'b0;
+logic [31:0] wbm_adr_o;
+logic [31:0] wbm_dat_o;
+logic [31:0] wbm_dat_i;
+logic        wbm_we_o;
+logic  [3:0] wbm_sel_o;
+logic        wbm_stb_o;
+logic        wbm_ack_i;
+logic        wbm_cyc_o;
+logic        pcpi_valid;  // out
+logic [31:0] pcpi_insn;   // out
+logic [31:0] pcpi_rs1;    // out
+logic [31:0] pcpi_rs2;    // out
+logic        pcpi_wr;     // in
+logic [31:0] pcpi_rd;     // in
+logic        pcpi_wait;   // in
+logic        pcpi_ready;  // in
+logic [31:0] irq;         // in
+logic [31:0] eoi;         // out
+logic        trace_valid; // out
+logic [35:0] trace_data;  // out
+logic        mem_instr;   // out
 
-// picorv32 inputs
-logic        resetn    =  1'b1;
-logic        mem_ready =  1'b1;
-logic [31:0] mem_rdata = 32'b0;
-logic        pcpi_wr;
-logic [31:0] pcpi_rd;
-logic        pcpi_wait;
-logic        pcpi_ready;
-logic [31:0] irq;
-
-picorv32 picorv32(
-  .clk           (ref_clk),
-  .resetn,
-  .trap,
-  .mem_valid,
-  .mem_instr,
-  .mem_ready,
-
-  .mem_addr,
-  .mem_wdata,
-  .mem_wstrb,
-  .mem_rdata,
-
-  .mem_la_read,
-  .mem_la_write,
-  .mem_la_addr,
-  .mem_la_wdata,
-  .mem_la_wstrb,
-
-  .pcpi_valid,
-  .pcpi_insn,
-  .pcpi_rs1,
-  .pcpi_rs2,
-  .pcpi_wr,
-  .pcpi_rd,
-  .pcpi_wait,
-  .pcpi_ready,
-
-  .irq,
-  .eoi,
-
-  .trace_valid,
-  .trace_data,
-);
+// picorv32_wb cpu(
+//   .trap,
+//   .wb_rst_i,
+//   .wb_clk_i    (ref_clk),
+//   .wbm_adr_o,
+//   .wbm_dat_o,
+//   .wbm_dat_i,
+//   .wbm_we_o,
+//   .wbm_sel_o,
+//   .wbm_stb_o,
+//   .wbm_ack_i,
+//   .wbm_cyc_o,
+//   .pcpi_valid,
+//   .pcpi_insn,
+//   .pcpi_rs1,
+//   .pcpi_rs2,
+//   .pcpi_wr,
+//   .pcpi_rd,
+//   .pcpi_wait,
+//   .pcpi_ready,
+//   .irq,
+//   .eoi,
+//   .trace_valid,
+//   .trace_data,
+//   .mem_instr
+// );
 
 // 19200 baud async serial UART
-uart1 uart1_inst(
-  .tx,
-  .tx_busy,
-  .tx_data,
-  .tx_w,
-  .clk_48   (ref_clk),
+localparam UART1_ADR = 32'h0FF;
+uart1 #(
+  .ADR      (UART1_ADR),
+) uart1_inst(
+  // Wishbone outputs
+  .dat_o    (wbm_dat_i),
+  .ack_o    (wbm_ack_i),
+
+  // Wishbone inputs
+  .clk_48_i (ref_clk),
+  .rst_i    (wb_rst_i),
+  .adr_i    (wbm_adr_o),
+  .dat_i    (wbm_dat_o),
+  .we_i     (wbm_we_o),
+  .stb_i    (wbm_stb_o),
+  .cyc_i    (wbm_cyc_o),
+  .sel_i    (wbm_sel_o),
+
+  // GPIO
+  .tx_o     (io_1),       // TX pin follows UART tx net
+  .rx_i     (io_0),       // RX pin drives UART rx net
 );
+
+// uart1 IO
+reg [7:0] tx_data = 8'h54;  // 0x41='A' 0x54='T'
+
+// Start with LED turned off
+reg [2:0] led_rgb_n = 3'b111;
+assign led_r  = led_rgb_n[2];  // LED Red, active low
+assign led_g  = led_rgb_n[1];  // LED Green, active low
+assign led_b  = led_rgb_n[0];  // LED Blue, active low
+
+// Reset state
+reg [1:0] rst_state = 2'b11;
 
 // Top level state machine
 always_ff @(posedge ref_clk) begin: main
 
+  // Reset circuit
+  unique case (rst_state)
+    2'b11:   rst_state <= 2'b10;
+    2'b10:   rst_state <= 2'b00;
+    default: rst_state <= 2'b00;
+  endcase
+  wb_rst_i <= rst_state[1];
+
   // Strobe tx_w every 1000 ms
   if (timer == 0) begin
-    tx_w <= 1'b1;
+    wbm_dat_o <= tx_data;
+    wbm_adr_o <= UART1_ADR;
+    wbm_sel_o <= 3'd0;
+    wbm_we_o <= 1'b1;
+    wbm_stb_o <= 1'b1;
+    wbm_cyc_o <= 1'b1;
     timer <= OVERFLOW_1S;
   end else begin
-    tx_w <= 1'b0;
+    wbm_we_o <= 1'b0;
+    wbm_stb_o <= 1'b0;
+    wbm_cyc_o <= 1'b0;
     timer <= timer + TIMER_INC;
   end
-
-  // Update IO pins
-  led_r <= io_0 & ~tx_busy;  // Red LED shows both TX and RX activity
-  led_b <= 1'b1;             // Blue LED off
-  led_g <= 1'b1;             // Green LED off
-  io_1 <= tx;                // TX pin driven by UART output
+  led_rgb_n[2] <= io_0 & io_1;  // Red LED shows TX or RX activity
 
 end: main
 
