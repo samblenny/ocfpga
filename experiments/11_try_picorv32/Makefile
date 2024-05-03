@@ -14,6 +14,8 @@ all:
 	@echo ''
 	@echo 'soc1            Build and flash soc1.bit'
 	@echo ''
+	@echo 'soc2            Build and flash soc2.bit'
+	@echo ''
 	@echo 'screen          Start 19200 baud screen terminal emulator'
 	@echo ''
 	@echo 'pullup.lpf      Generate lpf file for pullup on SDA'
@@ -29,6 +31,8 @@ all:
 	@echo 'uart.bit        Build bitstream to send async serial on TX'
 	@echo ''
 	@echo 'soc1.bit        Build bitstream for SoC with PicoRV32 and uart'
+	@echo ''
+	@echo 'soc2.bit        Build bitstream for SoC with PicoRV32 and uart'
 	@echo ''
 
 # Flash lowpower bitstream via Tigard JTAG, rebuilding bitstream if needed
@@ -54,6 +58,12 @@ flash-uart: uart.bit
 flash-soc1: soc1.bit
 	openFPGALoader -c tigard --freq 2M \
 		-f --file-type raw --verify -o 0x80000 soc1.bit
+
+# Flash soc2 bitstream via Tigard JTAG, rebuilding bitstream if needed
+.PHONY: flash-soc2
+flash-soc2: soc2.bit
+	openFPGALoader -c tigard --freq 2M \
+		-f --file-type raw --verify -o 0x80000 soc2.bit
 
 # Start terminal emulator (screen) with Tigard at low-ish baud rate so serial
 # monitor LED flashing will be slow enough to see clearly
@@ -94,7 +104,9 @@ uart.bit: lowpower.lpf uart.sv oc85f.sv Makefile
 	ecppack --compress --input uart_out.config --bit uart.bit
 	rm -f uart.json uart_out.config
 
-# Build bitstream with serial output on TX pin
+# soc1: Build bitstream with serial loopback using full duplex wishbone UART
+# This assumes https://github.com/YosysHQ/picorv32.git has been cloned into
+# the parent same directory as ocfpga
 PICORV32=../../../picorv32/picorv32.v
 soc1.bit: lowpower.lpf soc1.sv uart1.sv $(PICORV32) Makefile
 	yosys -p "read_verilog -sv -noautowire uart1.sv $(PICORV32) soc1.sv; \
@@ -103,6 +115,16 @@ soc1.bit: lowpower.lpf soc1.sv uart1.sv $(PICORV32) Makefile
 		--85k --package CSFBGA285 --lpf lowpower.lpf
 	ecppack --compress --input soc1_out.config --bit soc1.bit
 	rm -f soc1.json soc1_out.config
+
+# soc2: Build bitstream with picorv
+# (his depends on PICORV32=... which is defined above soc1)
+soc2.bit: lowpower.lpf soc2.sv uart1.sv $(PICORV32) Makefile
+	yosys -p "read_verilog -sv -noautowire uart1.sv $(PICORV32) soc2.sv; \
+		synth_ecp5 -json soc2.json"
+	nextpnr-ecp5 --json soc2.json --textcfg soc2_out.config \
+		--85k --package CSFBGA285 --lpf lowpower.lpf
+	ecppack --compress --input soc2_out.config --bit soc2.bit
+	rm -f soc2.json soc2_out.config
 
 # Build pin constraint file for low power configuration
 lowpower.lpf: gen_lpf.py
