@@ -105,29 +105,37 @@ always_ff @(posedge clk_48_i or posedge rst_i) begin: main
   end else begin: not_reset
 
   // Wishbone read/write decoder
-  if ((adr_i == ADR) && cyc_i) begin
-    ack_o <= stb_i;
-    if (stb_i) begin
-      if (we_i) begin
-        // Write: enqueue TX data from low byte of data word
-        // (CAUTION: silently ignore writes when TX state machine is busy)
-        // (CAUTION: wishbone sel_i is ignored, this always uses low-byte)
-        if (tx_state == IDLE) begin
-          tx_data_r = dat_i[7:0];  // latch tx data
-          tx_state <= START;       // move state out of IDLE (enable timer)
-          tx_timer <= TIMER_SEED;  // prepare timer to overflow at baud rate
+  // CAUTION: This uses continuous assignement ('=' instead of '<=') in several
+  // spots in the attempt to avoid adding an extra wishbone bus clock tick to
+  // every read or write cycle. It's possible this might lead to mysterious
+  // data glitches some day (in that case, try switching it all to '<=').
+  if ((adr_i == ADR) && cyc_i) begin: adr_decode
+    ack_o = stb_i;
+    unique case({stb_i, we_i})
+      2'b11: begin
+          // Strobe Write: enqueue TX data from low byte of data word
+          // (CAUTION: silently ignore writes when TX state machine is busy)
+          // (CAUTION: wishbone sel_i is ignored, this always uses low-byte)
+          if (tx_state == IDLE) begin
+            tx_data_r = dat_i[7:0];  // latch tx data
+            tx_state <= START;       // move state out of IDLE (enable timer)
+            tx_timer <= TIMER_SEED;  // prepare timer to overflow at baud rate
+          end
+          dat_o = 32'bz;
         end
-        dat_o <= 32'bz;
-      end else begin
-        // Read: drive RX data to low byte of data word
-        dat_o <= csr;
-        irq_rx <= 1'b0;  // clear RX ready IRQ
-      end
-    end
+      2'b10: begin
+          // Strobe Read: drive RX data to low byte of data word
+          dat_o = csr;
+          irq_rx = 1'b0;  // clear RX ready IRQ
+        end
+      default: begin
+          // !Strobe
+          dat_o = 32'bz;
+        end
+    endcase
   end else begin
-    // CAUTION: This gave me some trouble. It's important to make sure that
-    // ACK is released promptly once strobe is de-asserted, and driving ACK
-    // low when the address doesn't match could cause trouble.
+    // Address does not match or Cycle is low
+    // CAUTION: This gave me trouble. ACK must be released, not latched!
     ack_o = 1'bz;
     dat_o = 32'bz;
   end

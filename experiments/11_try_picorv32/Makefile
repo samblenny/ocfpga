@@ -4,36 +4,7 @@
 
 .PHONY: all
 all:
-	@echo 'Available make targets:'
-	@echo ''
-	@echo 'flash-lowpower  Build and flash lowpower.bit'
-	@echo ''
-	@echo 'flash-pullup    Build and flash pullup.bit'
-	@echo ''
-	@echo 'flash-uart      Build and flash uart.bit'
-	@echo ''
-	@echo 'soc1            Build and flash soc1.bit'
-	@echo ''
-	@echo 'soc2            Build and flash soc2.bit'
-	@echo ''
-	@echo 'screen          Start 19200 baud screen terminal emulator'
-	@echo ''
-	@echo 'pullup.lpf      Generate lpf file for pullup on SDA'
-	@echo ''
-	@echo 'triple-check-report.txt'
-	@echo '  Compare output of gen_lpf.py with orangecrab_r0.2.1.pcf'
-	@echo ''
-	@echo 'lowpower.bit'
-	@echo '  Build ECP5 bitstream to configure OrangeCrab 85F for low power'
-	@echo ''
-	@echo 'pullup.bit      Build bitstream to put pullup on SDA'
-	@echo ''
-	@echo 'uart.bit        Build bitstream to send async serial on TX'
-	@echo ''
-	@echo 'soc1.bit        Build bitstream for SoC with PicoRV32 and uart'
-	@echo ''
-	@echo 'soc2.bit        Build bitstream for SoC with PicoRV32 and uart'
-	@echo ''
+	@echo read Makefile to see available make targets
 
 # Flash lowpower bitstream via Tigard JTAG, rebuilding bitstream if needed
 .PHONY: flash-lowpower
@@ -118,8 +89,8 @@ soc1.bit: lowpower.lpf soc1.sv uart1.sv $(PICORV32) Makefile
 
 # soc2: Build bitstream with picorv
 # (his depends on PICORV32=... which is defined above soc1)
-soc2.bit: lowpower.lpf soc2.sv uart1.sv $(PICORV32) Makefile
-	yosys -p "read_verilog -sv -noautowire uart1.sv $(PICORV32) soc2.sv; \
+soc2.bit: lowpower.lpf soc2.sv uart2.sv $(PICORV32) Makefile
+	yosys -p "read_verilog -sv -noautowire uart2.sv $(PICORV32) soc2.sv; \
 		synth_ecp5 -json soc2.json"
 	nextpnr-ecp5 --json soc2.json --textcfg soc2_out.config \
 		--85k --package CSFBGA285 --lpf lowpower.lpf
