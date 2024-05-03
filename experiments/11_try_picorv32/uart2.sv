@@ -93,6 +93,8 @@ always_ff @(posedge clk_48_i or posedge rst_i) begin: main
 
   // Reset
   if (rst_i) begin
+    ack_o     =  1'bz;
+    dat_o     =  32'bz;
     tx_data_r <= 8'h0;
     csr       <= 32'h0;
     tx_state  <= IDLE;
@@ -109,7 +111,7 @@ always_ff @(posedge clk_48_i or posedge rst_i) begin: main
   // spots in the attempt to avoid adding an extra wishbone bus clock tick to
   // every read or write cycle. It's possible this might lead to mysterious
   // data glitches some day (in that case, try switching it all to '<=').
-  if ((adr_i == ADR) && cyc_i) begin: adr_decode
+  if ((adr_i == ADR) && cyc_i) begin
     ack_o = stb_i;
     unique case({stb_i, we_i})
       2'b11: begin
